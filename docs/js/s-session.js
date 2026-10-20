@@ -33,6 +33,31 @@ function currentStage(exId) {
 }
 
 let timer = null;
+// Stopwatch for duration stages ("zostań", relaks): tap to start, tap to stop and see seconds.
+const watch = { start: 0, last: null, raf: 0 };
+let audio = null;
+function clickSound() {
+  try {
+    audio ||= new (window.AudioContext || window.webkitAudioContext)();
+    const t = audio.currentTime;
+    [0, 0.045].forEach((dt, k) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = 'square';
+      o.frequency.value = k ? 2600 : 3200;
+      g.gain.setValueAtTime(0.0001, t + dt);
+      g.gain.exponentialRampToValueAtTime(0.35, t + dt + 0.002);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.03);
+      o.connect(g).connect(audio.destination);
+      o.start(t + dt); o.stop(t + dt + 0.035);
+    });
+  } catch { /* no audio */ }
+}
+function tickWatch() {
+  const el = document.getElementById('sw');
+  if (!watch.start || !el) return;
+  el.textContent = ((Date.now() - watch.start) / 1000).toFixed(1) + ' s';
+  watch.raf = requestAnimationFrame(tickWatch);
+}
 export function mount(root) {
   clearInterval(timer);
   const d = draft();
@@ -41,6 +66,7 @@ export function mount(root) {
   const tick = () => { if (el) el.textContent = fmtClock((Date.now() - d.startedAt) / 1000); };
   tick();
   timer = setInterval(() => { if (!document.body.contains(el)) return clearInterval(timer); tick(); }, 1000);
+  if (watch.start) tickWatch();
   root.querySelectorAll('textarea[data-note]').forEach((ta) => {
     ta.oninput = () => { const dd = draft(); dd.items[Number(ta.dataset.note)].note = ta.value; saveDraft(dd); };
   });
@@ -61,6 +87,10 @@ export function render() {
     <div class="top-right"><button class="icon-btn" data-act="discard" aria-label="Porzuć trening">${icon('trash')}</button></div>
   </header>
   <p class="hint">Stuknij <b>✓</b> po każdym udanym powtórzeniu, <b>✗</b> po nieudanym. 5–10 minut wystarczy — kończcie, gdy pies jeszcze chce więcej.</p>
+  <div class="tools">
+    <button class="tool" data-act="click-sound" aria-label="Kliker — dźwięk markera">${icon('target')}<span>Kliker</span></button>
+    <button class="tool ${watch.start ? 'on' : ''}" data-act="stopwatch" aria-label="Stoper do zostań">${icon('timer')}<span id="sw">${watch.start ? 'Stop' : watch.last !== null ? watch.last.toFixed(1) + ' s' : 'Stoper'}</span></button>
+  </div>
   ${d.items.length ? d.items.map((it, i) => itemCard(it, i, sessions)).join('') : '<div class="empty small"><p>Dodaj pierwsze ćwiczenie.</p></div>'}
   <button class="btn ghost wide" data-act="add-ex">${icon('plus')} Dodaj ćwiczenie</button>
   <div class="sticky-cta"><button class="btn primary big wide" data-act="finish" ${d.items.length ? '' : 'disabled'}>${icon('check')} Zakończ i zapisz</button></div>`;
@@ -186,6 +216,20 @@ async function saveDraftAsSession(rating, note) {
 
 export const actions = {
   'new-empty': () => startSession([]),
+  'click-sound': () => { clickSound(); vibrate(8); },
+  stopwatch: (el) => {
+    if (watch.start) {
+      watch.last = (Date.now() - watch.start) / 1000;
+      watch.start = 0;
+      cancelAnimationFrame(watch.raf);
+      el.classList.remove('on');
+      el.querySelector('span').textContent = watch.last.toFixed(1) + ' s';
+    } else {
+      watch.start = Date.now();
+      el.classList.add('on');
+      tickWatch();
+    }
+  },
   ok: (el) => { vibrate(10); upd(Number(el.dataset.i), (it) => { it.ok++; it.log.push(1); }); },
   fail: (el) => { vibrate(25); upd(Number(el.dataset.i), (it) => { it.fail++; it.log.push(0); }); },
   undo: (el) => upd(Number(el.dataset.i), (it) => { const l = it.log.pop(); if (l === 1) it.ok--; else if (l === 0) it.fail--; }),

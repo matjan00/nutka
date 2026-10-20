@@ -308,6 +308,11 @@ textarea { resize: vertical; min-height: 44px; }
 .rate { flex: 1; min-height: 56px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--bg); font-weight: 650; }
 .rate[aria-checked="true"] { background: var(--green); color: var(--green-ink); border-color: var(--green); }
 
+.tools { display: flex; gap: 10px; margin: 0 0 14px; }
+.tool { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--card); font-weight: 650; font-variant-numeric: tabular-nums; }
+.tool:active { transform: scale(.97); }
+.tool.on { background: var(--ochre); border-color: var(--ochre); color: #1D211E; }
+
 /* ---------- progress ---------- */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
 .stats-grid .card { margin: 0; }
