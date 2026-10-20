@@ -57,7 +57,7 @@ export function render() {
 
 function repeatText(t) {
   if (t.repeat === 'daily') return 'codziennie';
-  if (t.repeat === 'weekly') return 'co tydzień: ' + (t.wd || []).sort().map((i) => WD_SHORT[i]).join(', ');
+  if (t.repeat === 'weekly') return 'co tydzień: ' + [...(t.wd || [])].sort().map((i) => WD_SHORT[i]).join(', ');
   return t.doneAt ? `zrobione ${fmtDay(t.doneAt)}` : t.due ? `do ${fmtDay(t.due)}` : 'jednorazowe';
 }
 

@@ -86,6 +86,7 @@ button { cursor: pointer; }
 
 .wrap { max-width: 640px; margin: 0 auto; padding: max(14px, env(safe-area-inset-top)) 16px calc(var(--tabs-h) + 28px + env(safe-area-inset-bottom)); }
 body.no-tabs .wrap { padding-bottom: 120px; }
+.wrap:has(.fab) { padding-bottom: calc(var(--tabs-h) + 110px + env(safe-area-inset-bottom)); }
 
 /* ---------- header ---------- */
 .top { display: flex; align-items: center; gap: 12px; margin: 4px 0 16px; min-height: 48px; }
