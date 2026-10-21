@@ -8,5 +8,5 @@ const cur = JSON.parse(fs.readFileSync(d('version.json'), 'utf8')).v;
 const v = cur + 1;
 fs.writeFileSync(d('version.json'), JSON.stringify({ v }) + '\n');
 fs.writeFileSync(d('js/version.js'), fs.readFileSync(d('js/version.js'), 'utf8').replace(/APP_VERSION = \d+/, `APP_VERSION = ${v}`));
-fs.writeFileSync(d('sw.js'), fs.readFileSync(d('sw.js'), 'utf8').replace(/const VERSION = 'aport-v\d+'/, `const VERSION = 'aport-v${v}'`));
+fs.writeFileSync(d('sw.js'), fs.readFileSync(d('sw.js'), 'utf8').replace(/const VERSION = 'nutka-v\d+'/, `const VERSION = 'nutka-v${v}'`));
 console.log(`Wersja ${cur} → ${v}`);

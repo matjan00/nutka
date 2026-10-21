@@ -3,9 +3,10 @@
 import * as D from './data.js';
 import { EXERCISES } from './exercises.js';
 import { icon, toast, confirmSheet, openSheet } from './ui.js';
-import { esc, dayKey, uid } from './util.js';
+import { esc, dayKey, stableId, uid } from './util.js';
 import { header, exBadge, avatar } from './comp.js';
 import { APP_VERSION, checkForUpdate, applyUpdate } from './update.js';
+import { isInstalled } from './install.js';
 
 const { store } = D;
 
@@ -65,7 +66,8 @@ export function renderSettings() {
 
   <section class="card">
     <h2>Aplikacja</h2>
-    <p class="muted small">Wersja ${APP_VERSION}</p>
+    <p class="muted small">Wersja ${APP_VERSION}${isInstalled() ? ' · zainstalowana' : ''}</p>
+    ${isInstalled() ? '' : `<button class="btn primary wide" data-act="install">${icon('download')} Zainstaluj aplikację</button>`}
     <button class="btn ghost wide" data-act="check-update">${icon('sync')} Sprawdź aktualizację</button>
   </section>`;
 }
@@ -172,14 +174,16 @@ function wordSheet(w) {
 }
 
 // ---------- welcome (first run) ----------
-const wz = { step: 0, dog: '', a: '', b: '', me: 'a', known: new Set(), goals: new Set(D.STARTER_GOALS) };
+const wz = { step: 0, dog: 'Nutka', a: '', b: '', me: 'a', known: new Set(), goals: new Set(D.STARTER_GOALS) };
 
 export function renderWelcome() {
   const steps = [
-    () => `<div class="welcome-hero">${icon('paw', 'huge')}<h1>Aport</h1><p>Wspólny dziennik treningów posłuszeństwa i sztuczek — dla Was dwojga i Waszego border collie.</p></div>
+    () => `<div class="welcome-hero">${icon('paw', 'huge')}<h1>Nutka</h1><p>Wspólny dziennik treningów posłuszeństwa i sztuczek — dla Was dwojga i Waszego border collie.</p></div>
       <label class="field"><span>Jak ma na imię pies?</span><input id="w-dog" value="${esc(wz.dog)}" placeholder="np. Luna" autocomplete="off"></label>
-      <button class="btn primary big wide" data-act="w-next">Dalej</button>
-      ${store.configured ? '<button class="link wide mt" data-act="w-login">Mam już konto — zaloguj i pobierz dane</button>' : ''}`,
+      ${store.configured && !(store.syncState().status === 'idle' && store.syncState().at) ? `<div class="login-hint"><p><b>Najpierw zaloguj się</b> — tym samym kontem co w aplikacji inwestycyjnej. Dzięki temu oboje zobaczycie te same postępy.</p>
+        <button class="btn primary big wide" data-act="w-login">Zaloguj się</button></div>
+        <button class="btn ghost wide mt" data-act="w-next">Dalej bez logowania</button>`
+      : '<button class="btn primary big wide" data-act="w-next">Dalej</button>'}`,
     () => `<h1>Kto trenuje?</h1><p class="muted">Aplikacja liczy, kto ile trenował, i pozwala przydzielać zadania.</p>
       <label class="field"><span>Ty</span><input id="w-a" value="${esc(wz.a)}" placeholder="Twoje imię"></label>
       <label class="field"><span>Żona</span><input id="w-b" value="${esc(wz.b)}" placeholder="Jej imię"></label>
@@ -215,9 +219,9 @@ async function finishWelcome() {
   await D.saveSettings({ dogName: wz.dog, trainers: { a: wz.a, b: wz.b }, onboarded: true, startedAt: dayKey() });
   for (const id of wz.known) await D.markMastered(id);
   for (const id of wz.goals) if (!wz.known.has(id)) await D.setProgress(id, { active: true, startedAt: dayKey() });
-  if (!D.tasks().length) for (const t of D.STARTER_TASKS) await D.saveTask({ ...t, id: uid(), from: dayKey() });
+  if (!D.tasks().length) for (const [i, t] of D.STARTER_TASKS.entries()) await D.saveTask({ ...t, id: stableId('starter-task:' + i), from: dayKey() });
   location.hash = '#/';
-  toast(`Witaj w Aporcie${wz.dog ? ', ' + wz.dog : ''}!`, { celebrate: true });
+  toast(`Witaj w Nutce${wz.dog ? ', ' + wz.dog : ''}!`, { celebrate: true });
 }
 
 // Shown after signing in on the second phone: only "who holds this phone?".
@@ -242,7 +246,7 @@ function loginSheet() {
         try {
           await store.signIn(String(f.get('email')).trim(), String(f.get('password')));
           close();
-          if (D.settings().onboarded) { location.hash = '#/'; askWhoAmI(); } else toast('Zalogowano — brak danych, przejdź przez powitanie');
+          if (D.settings().onboarded) { location.hash = '#/'; askWhoAmI(); } else { toast('Zalogowano ✓'); readWelcome(); wz.step = 1; window.__rerender?.(); }
         } catch (e) { toast('Nie udało się: ' + e.message); }
       };
     },
@@ -256,7 +260,7 @@ export const actions = {
     const blob = new Blob([JSON.stringify(store.exportAll(), null, 1)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `aport-kopia-${dayKey()}.json`;
+    a.download = `nutka-kopia-${dayKey()}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   },

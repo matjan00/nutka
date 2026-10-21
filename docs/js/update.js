@@ -23,7 +23,7 @@ export async function applyUpdate() {
     const regs = (await navigator.serviceWorker?.getRegistrations?.()) || [];
     await Promise.all(regs.map((r) => r.update().catch(() => {})));
     const keys = await caches.keys();
-    await Promise.all(keys.filter((k) => k !== 'aport-fonts').map((k) => caches.delete(k)));
+    await Promise.all(keys.filter((k) => k !== 'nutka-fonts').map((k) => caches.delete(k)));
   } catch { /* reload anyway */ }
   location.reload();
 }

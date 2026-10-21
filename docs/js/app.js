@@ -87,6 +87,7 @@ document.addEventListener('click', async (ev) => {
 });
 
 window.addEventListener('hashchange', render);
+window.addEventListener('bip', () => softRender());
 
 (async function start() {
   await store.openStore();

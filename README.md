@@ -1,4 +1,4 @@
-# Aport
+# Nutka
 
 Phone app (PWA, Polish UI) for obedience and trick training of a border collie, shared by two people.
 

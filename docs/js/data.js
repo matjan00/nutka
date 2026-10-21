@@ -19,9 +19,9 @@ const ls = {
   del: (k) => { try { localStorage.removeItem(k); } catch { /* private mode */ } },
 };
 export const local = ls;
-export const me = () => (ls.get('aport.me') === 'b' ? 'b' : 'a');
-export const setMe = (k) => ls.set('aport.me', k);
-export const hasChosenMe = () => ls.get('aport.me') !== null;
+export const me = () => (ls.get('nutka.me') === 'b' ? 'b' : 'a');
+export const setMe = (k) => ls.set('nutka.me', k);
+export const hasChosenMe = () => ls.get('nutka.me') !== null;
 export const trainerName = (k) => settings().trainers[k] || (k === 'b' ? 'Osoba 2' : 'Osoba 1');
 export const dogName = () => settings().dogName || 'Pies';
 

@@ -1,4 +1,4 @@
-/* Aport — "Pastwisko": paper-cream meadow, collie-black ink, grass green and ochre whistle. */
+/* Nutka — "Pastwisko": paper-cream meadow, collie-black ink, grass green and ochre whistle. */
 :root {
   --bg: #F4EFE4;
   --bg2: #EDE6D7;
@@ -177,6 +177,14 @@ body.no-tabs .wrap { padding-bottom: 120px; }
 .home-top { margin-bottom: 18px; }
 .banner { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-radius: var(--r); padding: 14px 16px; margin-bottom: 14px; text-align: left; background: var(--ochre-soft); color: var(--ink); }
 .banner .i:first-child { color: var(--ochre); width: 28px; height: 28px; }
+.banner.install { background: var(--green); color: var(--green-ink); }
+.banner.install .i:first-child { color: var(--green-ink); }
+.banner.install small { color: inherit; opacity: .85; }
+.login-hint { background: var(--card); border-radius: var(--r); padding: 16px; box-shadow: var(--shadow); margin-top: 6px; }
+.login-hint p { margin: 0 0 12px; color: var(--ink2); }
+.steps { margin: 0 0 8px; padding-left: 22px; line-height: 1.6; }
+.steps li { margin: 6px 0; }
+#main .card .btn.wide + .btn.wide { margin-top: 10px; }
 .banner span { flex: 1; } .banner strong { display: block; } .banner small { color: var(--ink2); }
 .hero { display: flex; gap: 16px; align-items: center; background: var(--ink); color: var(--bg); }
 .hero .eyebrow { color: color-mix(in srgb, var(--bg) 60%, transparent); }

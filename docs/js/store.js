@@ -20,7 +20,7 @@ import { uid } from './util.js';
 import { SUPABASE_URL, SUPABASE_KEY, TABLE } from './config.js';
 import { startSince, nextCursor, afterFilter } from './sync-cursor.js';
 
-const DB_NAME = 'aport';
+const DB_NAME = 'nutka';
 const mem = new Map();          // id → record
 let outbox = new Set();         // ids waiting to be pushed
 let lastPull = null;            // server synced_at of the newest pulled row
@@ -249,10 +249,10 @@ if (configured) {
 
 // ---------- backup ----------
 export function exportAll() {
-  return { app: 'aport', exported_at: new Date().toISOString(), records: [...mem.values()] };
+  return { app: 'nutka', exported_at: new Date().toISOString(), records: [...mem.values()] };
 }
 export async function importAll(json) {
-  if (json?.app !== 'aport' || !Array.isArray(json.records)) throw new Error('To nie jest plik kopii zapasowej Aportu.');
+  if (json?.app !== 'nutka' || !Array.isArray(json.records)) throw new Error('To nie jest plik kopii zapasowej Nutki.');
   const recs = json.records.filter((r) => r && r.id && r.kind);
   await writeLocal(recs.map((r) => ({ ...r, updated_at: new Date().toISOString() })));
   return recs.length;

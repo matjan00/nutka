@@ -1,4 +1,4 @@
--- Aport — shared table for both phones (you + wife). Run once in Supabase → SQL Editor → New query → Run.
+-- Nutka — shared table for both phones (you + wife). Run once in Supabase → SQL Editor → New query → Run.
 -- Safe to run again.
 --
 -- Everything the app stores (exercise progress, sessions, tasks, ticks, journal, settings) is one row here;

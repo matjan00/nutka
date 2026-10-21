@@ -7,7 +7,7 @@ import { icon, openSheet, toast, confirmSheet, vibrate } from './ui.js';
 import { esc, dayKey, fmtClock, uid } from './util.js';
 import { exBadge, stageText, catShort } from './comp.js';
 
-const KEY = 'aport.draft';
+const KEY = 'nutka.draft';
 export function draft() {
   try { const d = JSON.parse(D.local.get(KEY) || 'null'); return d && Array.isArray(d.items) ? d : null; } catch { return null; }
 }

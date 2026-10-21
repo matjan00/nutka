@@ -7,6 +7,7 @@ import { esc, dayKey, fmtDayLong, plural, hash } from './util.js';
 import { exBadge, stageText, avatar, sessionRow, whoChip, assigneeChip, emptyState } from './comp.js';
 import { syncLine } from './s-more.js';
 import { draft, startSession } from './s-session.js';
+import { installCard, install } from './install.js';
 
 export function render() {
   const day = dayKey(), s = D.settings(), meK = D.me();
@@ -27,13 +28,15 @@ export function render() {
     <div class="top-right"><button class="icon-btn" data-act="go" data-to="#/settings" aria-label="Ustawienia">${icon('gear')}</button></div>
   </header>
 
+  ${installCard()}
+  ${D.store.configured && D.store.syncState().status === 'signed-out' ? `<button class="banner" data-act="go" data-to="#/settings">${icon('sync')}<span><strong>Zaloguj się</strong><small>Żeby dzielić postępy z drugim telefonem</small></span>${icon('next')}</button>` : ''}
   ${dr ? `<button class="banner live" data-act="go" data-to="#/session">${icon('timer')}<span><strong>Trening w toku</strong><small>${dr.items.length} ${plural(dr.items.length, 'ćwiczenie', 'ćwiczenia', 'ćwiczeń')} — wróć i dokończ</small></span>${icon('next')}</button>` : ''}
 
   <section class="hero card">
     <div class="hero-ring">${ring(wkCount / goal, 84, 9)}<div class="hero-ring-num"><strong>${wkCount}</strong><small>/ ${goal}</small></div></div>
     <div class="hero-text">
       <p class="eyebrow">Ten tydzień</p>
-      <p class="hero-line">${wkCount >= goal ? `Cel tygodnia zrobiony! ${esc(D.dogName())} jest dumny.` : `Jeszcze ${goal - wkCount} ${plural(goal - wkCount, 'sesja', 'sesje', 'sesji')} do celu`}</p>
+      <p class="hero-line">${wkCount >= goal ? `Cel tygodnia zrobiony! Brawo, ${esc(D.dogName())}!` : `Jeszcze ${goal - wkCount} ${plural(goal - wkCount, 'sesja', 'sesje', 'sesji')} do celu`}</p>
       <div class="hero-chips">
         <span class="chip ${st ? 'flame' : ''}">${icon('flame')} ${st} ${plural(st, 'dzień', 'dni', 'dni')} z rzędu</span>
         <span class="chip">${todays.length ? `${todays.length}× dziś` : 'Dziś jeszcze nic'}</span>
@@ -85,6 +88,7 @@ function tipCard(day) {
 }
 
 export const actions = {
+  install: () => install(),
   'start-plan': () => {
     const s = D.settings();
     const plan = planToday({ progress: D.progressList(), sessions: D.sessions(), exercises: D.exercises(), day: dayKey(), n: s.perSession || 4 });
