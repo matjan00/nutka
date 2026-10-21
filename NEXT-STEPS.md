@@ -1,35 +1,24 @@
-# Aport — co zostało do zrobienia (wymaga Ciebie)
+# Nutka — co zostało (wymaga Ciebie)
 
-Aplikacja działa w całości na komputerze (podgląd). Wszystko jest zapisane lokalnie w folderze
-`Documents\aport` — nic nie zostało opublikowane w internecie.
+Adres aplikacji: **https://matjan00.github.io/nutka/**
+Wspólne dane: tabela `dog_records` w bazie Supabase od aplikacji inwestycyjnej (już utworzona).
 
-## 1. Szczegóły o psie i treningu (jutro)
-Napisz mi w czacie, co tylko wiesz — dopasuję plan i ćwiczenia:
-- imię psa, płeć, czy jest zdjęcie,
-- co już umie na pewno (a co „prawie”),
-- problemy: np. ciągnięcie na smyczy, gonienie rowerów/aut, szczekanie, skakanie na ludzi, pilnowanie zabawek, lęki,
-- cele: posłuszeństwo na co dzień? konkretne sztuczki? sport (agility, frisbee, nosework)?
-- ile czasu dziennie macie na trening i kto z Was ile,
-- co psa najbardziej motywuje (jedzenie, piłka, szarpak),
-- czy chodzicie na kurs / do trenera (mogę dodać jego zadania domowe).
+## 1. Instalacja na Twoim telefonie
+1. Otwórz adres w Chrome.
+2. Stuknij **Zaloguj się** — ten sam e-mail i hasło co w aplikacji inwestycyjnej.
+3. Przejdź powitanie (Wasze imiona, co Nutka umie, od czego zaczynacie).
+4. Stuknij zielony przycisk **Zainstaluj aplikację** na górze ekranu „Dziś”.
 
-## 2. Publikacja (żeby otworzyć na telefonach)
-Proponuję tak jak inne aplikacje: publiczne repozytorium GitHub `matjan00/aport` + GitHub Pages
-→ adres `https://matjan00.github.io/aport/`. W repozytorium nie ma żadnych Waszych danych (dane są tylko
-w telefonach / w bazie). **Potrzebuję Twojego „tak, publikuj”.**
+## 2. Telefon żony (dopiero po kroku 1)
+1. Otwórz ten sam adres, stuknij **Zaloguj się** jej kontem z aplikacji inwestycyjnej.
+2. Aplikacja pobierze Wasze dane i zapyta „Kto używa tego telefonu?” — wybrać jej imię.
+3. **Zainstaluj aplikację**.
+Ważne: żona niech się zaloguje zamiast przechodzić powitanie od nowa — inaczej nadpisze ustawienia.
 
-## 3. Wspólne postępy na dwóch telefonach (synchronizacja)
-Bez tego każdy telefon ma swoje dane. Propozycja: dodać jedną tabelę do bazy Supabase od aplikacji
-inwestycyjnej (tej, którą już dzielicie z żoną) — wtedy oboje logujecie się tymi samymi kontami co tam.
-Do decyzji:
-- czy ten projekt Supabase (inwestycje) może być? Czy żona ma tam swoje konto?
-- uruchomienie pliku `supabase/schema.sql` w Supabase → SQL Editor (mogę przeprowadzić krok po kroku),
-- potem ja wpisuję adres bazy do aplikacji i wydaję nową wersję.
-
-## 4. Instalacja
-Na każdym telefonie: otwórz adres w Chrome → menu ⋮ → „Dodaj do ekranu głównego”.
-Na telefonie żony przy pierwszym uruchomieniu: „Mam już konto — zaloguj” (po kroku 3).
+## 3. Szczegóły o Nutce (kiedy będziesz mieć czas)
+Co umie na pewno / prawie, problemy (smycz, gonienie, szczekanie…), cele, nagrody, ile czasu macie,
+czy chodzicie na kurs. Na tej podstawie dopasuję plan i ćwiczenia.
 
 ## Do sprawdzenia na prawdziwym telefonie
-- dźwięk klikera (przycisk „Kliker” w treningu) i wibracje przy ✓ / ✗,
-- dodawanie zdjęcia psa z aparatu.
+- czy logowanie i synchronizacja działają na obu telefonach (trening z jednego widać na drugim),
+- dźwięk klikera i wibracje przy ✓ / ✗, dodawanie zdjęcia Nutki.
