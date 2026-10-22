@@ -4,6 +4,7 @@
 // why, stages[{t, d, goal}], tips[], mistakes[], collie (uwaga dla border collie), pre (ćwiczenia wcześniej).
 
 export const CATEGORIES = [
+  { id: 'beh', name: 'Od behawiorystki', short: 'Behawiorysta', desc: 'Ćwiczenia z zaleceń — opis to ogólna podpowiedź, ważniejsze są wskazówki z Waszego spotkania.' },
   { id: 'base', name: 'Fundamenty', short: 'Fundamenty', desc: 'Marker, kontakt, target — na tym stoi cała reszta.' },
   { id: 'obed', name: 'Posłuszeństwo', short: 'Posłuszeństwo', desc: 'Komendy na co dzień: w domu, na spacerze, w mieście.' },
   { id: 'calm', name: 'Spokój i samokontrola', short: 'Spokój', desc: 'Wyłącznik, cierpliwość, mijanie bodźców — kluczowe u border collie.' },
@@ -16,9 +17,44 @@ export const LEVELS = { 1: 'łatwe', 2: 'średnie', 3: 'trudne' };
 const R2 = '8 z 10 udanych w 2 sesjach z rzędu';
 
 export const EXERCISES = [
+  // ───────────── OD BEHAWIORYSTKI ─────────────
+  {
+    id: 'reka', name: 'Karmienie z ręki „za nic”', cat: 'beh', lvl: 1, calm: true, cue: '—', signal: '—',
+    why: 'Posiłek podawany spokojnie z ręki, bez komend i bez wymagań. Pies dostaje jedzenie od Was, nie musi niczego „załatwiać” ani pilnować — to obniża napięcie i potrzebę kontrolowania otoczenia, a buduje relację.',
+    stages: [
+      { t: 'Spokojna ręka', d: 'Na dworze, w spokojnym miejscu (ogród, przed domem). Podawaj karmę po kawałku z otwartej dłoni. Bez komend, bez gadania, bez nakręcania. Ty siedzisz lub stoisz spokojnie.', goal: 'Cały posiłek zjedzony spokojnie z ręki' },
+      { t: 'Spokojne tempo', d: 'Jeśli pies skacze, gryzie palce lub się nakręca — zatrzymaj rękę i poczekaj na chwilę spokoju, dopiero wtedy kolejny kawałek.', goal: '3 dni z rzędu spokojnych posiłków' },
+      { t: 'Różne miejsca na dworze', d: 'Ten sam spokojny rytuał w kilku miejscach wokół domu. Wciąż bez komend.', goal: 'Spokojnie w 3 miejscach' },
+    ],
+    tips: ['Kończcie posiłek spokojnie — bez zabawy i ekscytacji na koniec.', 'Jedzenie „za nic” znaczy naprawdę za nic: nie proście o siad przed każdym kęsem.'],
+    mistakes: ['Zamienianie posiłku w trening z dużą liczbą komend.', 'Pobudzający głos i ruchy.'],
+  },
+  {
+    id: 'podazanie', name: 'Podążanie za opiekunem', cat: 'beh', lvl: 1, calm: true, cue: '—', signal: '—',
+    why: 'Idziesz powoli, a pies sam wybiera, żeby iść za Tobą — i za to dostaje kawałek posiłku. Pies uczy się, że to Wy prowadzicie, a on może odpuścić pilnowanie otoczenia. To nie jest spacer — krótko, w jednym spokojnym miejscu przy domu.',
+    stages: [
+      { t: 'Kilka kroków', d: 'Na dworze (ogród, podwórko; jeśli trzeba — na długiej lince). Zrób kilka wolnych kroków. Gdy pies jest przy Tobie, podaj kawałek karmy przy nodze. Bez komend.', goal: 'Pies idzie za Tobą kilka kroków' },
+      { t: 'Zmiany kierunku', d: 'Spokojnie zmieniaj kierunek. Nagradzaj, gdy pies podąża za zmianą.', goal: 'Podąża przy 3 zmianach kierunku' },
+      { t: 'Dłużej i spokojnie', d: 'Kilka minut wolnego chodzenia, nagrody coraz rzadziej, pies wciąż przy Tobie i rozluźniony.', goal: '3 min spokojnego podążania' },
+    ],
+    tips: ['Tempo spacerowe albo wolniej — to ma uspokajać, nie nakręcać.'],
+    mistakes: ['Wołanie i zachęcanie psa — niech sam wybierze, żeby iść za Tobą.'],
+  },
+  {
+    id: 'kenel', name: 'Kenel — spokojny odpoczynek', cat: 'beh', lvl: 1, calm: true, cue: 'Kenel', signal: '—',
+    why: 'Kenel to miejsce, gdzie pies naprawdę odpoczywa i nie musi niczego pilnować. Psy nadmiernie kontrolujące otoczenie często w ogóle nie odpoczywają — kenel im w tym pomaga. Czas w kenelu zapisujecie w karcie „Kenel” na ekranie Dziś.',
+    stages: [
+      { t: 'Kenel to dobre miejsce', d: 'Wygodne posłanie, woda, ewentualnie gryzak. Kenel w spokojnym miejscu domu, można przykryć kocem.', goal: 'Pies sam wchodzi do kenela' },
+      { t: 'Zamknięte drzwiczki', d: 'Zamykaj, gdy pies leży spokojnie. Otwieraj, gdy jest cicho — nie wtedy, gdy szczeka lub drapie.', goal: 'Spokojnie przy zamkniętych drzwiczkach' },
+      { t: 'Długi odpoczynek', d: 'Kilka dłuższych drzemek w ciągu dnia, razem minimum tyle, ile zaleciła behawiorystka.', goal: 'Dzienny limit kenela osiągnięty spokojnie' },
+    ],
+    tips: ['Wyjścia na siku krótkie i nudne, prosto na trawę i z powrotem.', 'Wypuszczajcie w chwili ciszy.'],
+    mistakes: ['Otwieranie, gdy pies szczeka — uczy, że szczekanie otwiera drzwi.'],
+  },
+
   // ───────────── FUNDAMENTY ─────────────
   {
-    id: 'marker', name: 'Słowo-marker „Tak!”', cat: 'base', lvl: 1, cue: 'Tak!', signal: '—',
+    calm: true, id: 'marker', name: 'Słowo-marker „Tak!”', cat: 'base', lvl: 1, cue: 'Tak!', signal: '—',
     why: 'Marker mówi psu „dokładnie TO zachowanie dostaje nagrodę”. Dzięki niemu pies rozumie, za co płacicie, nawet z odległości. Oboje używajcie tego samego słowa i tego samego tonu.',
     stages: [
       { t: 'Ładowanie markera', d: 'W spokojnym miejscu powiedz „Tak!” i w ciągu 1 sekundy podaj smakołyk. Nic więcej — pies nie musi nic robić. 10–15 powtórzeń.', goal: 'Pies po „Tak!” odwraca głowę do ręki ze smakołykiem' },
@@ -30,7 +66,7 @@ export const EXERCISES = [
     mistakes: ['Mówienie „Tak!” bez nagrody — marker traci wartość.', 'Każdy z Was używa innego słowa.'],
   },
   {
-    id: 'imie', name: 'Reakcja na imię', cat: 'base', lvl: 1, cue: '(imię psa)', signal: '—',
+    calm: true, id: 'imie', name: 'Reakcja na imię', cat: 'base', lvl: 1, cue: '(imię psa)', signal: '—',
     why: 'Imię znaczy „spójrz na mnie, zaraz coś powiem”. To nie jest przywołanie — tylko zwrócenie uwagi.',
     stages: [
       { t: 'Imię w domu', d: 'Pies stoi blisko. Powiedz imię raz, gdy spojrzy — „Tak!” i nagroda.', goal: R2 },
@@ -41,7 +77,7 @@ export const EXERCISES = [
     mistakes: ['Używanie imienia, by skarcić psa.'],
   },
   {
-    id: 'patrz', name: 'Kontakt wzrokowy „Patrz”', cat: 'base', lvl: 1, cue: 'Patrz', signal: 'Palec przy oku',
+    calm: true, id: 'patrz', name: 'Kontakt wzrokowy „Patrz”', cat: 'base', lvl: 1, cue: 'Patrz', signal: 'Palec przy oku',
     why: 'Pies, który patrzy na Was, nie gapi się na rowerzystę, kota czy owce. Dla border collie (skłonnych do „wpatrywania się” w ruch) to podstawa samokontroli.',
     stages: [
       { t: 'Łapanie spojrzenia', d: 'Trzymaj smakołyk w zaciśniętej dłoni z boku. Czekaj — gdy pies przestanie wpatrywać się w rękę i spojrzy Ci w oczy, „Tak!” i nagroda.', goal: R2 },
@@ -54,7 +90,7 @@ export const EXERCISES = [
     mistakes: ['Wydłużanie czasu za szybko — pies odwraca wzrok i się zniechęca.'],
   },
   {
-    id: 'dotknij', name: 'Target nosem „Dotknij”', cat: 'base', lvl: 1, cue: 'Dotknij', signal: 'Otwarta dłoń bokiem do psa',
+    calm: true, id: 'dotknij', name: 'Target nosem „Dotknij”', cat: 'base', lvl: 1, cue: 'Dotknij', signal: 'Otwarta dłoń bokiem do psa',
     why: 'Pies dotyka nosem Twojej dłoni. To „pilot” do prowadzenia psa bez smakołyka w ręce: na wagę, obok nogi, przez drzwi, do sztuczek. Collie to uwielbiają.',
     stages: [
       { t: 'Pierwsze dotknięcia', d: 'Pokaż pustą otwartą dłoń 10 cm od nosa. Pies powącha = „Tak!” i nagroda z drugiej ręki. Chowaj dłoń za plecy między powtórzeniami.', goal: R2 },
@@ -68,7 +104,7 @@ export const EXERCISES = [
 
   // ───────────── POSŁUSZEŃSTWO ─────────────
   {
-    id: 'siad', name: 'Siad', cat: 'obed', lvl: 1, cue: 'Siad', signal: 'Dłoń wnętrzem do góry, unosi się',
+    calm: true, id: 'siad', name: 'Siad', cat: 'obed', lvl: 1, cue: 'Siad', signal: 'Dłoń wnętrzem do góry, unosi się',
     why: 'Najprostsza „grzeczna” pozycja: zamiast skakania, przed miską, przed przejściem przez ulicę.',
     stages: [
       { t: 'Wabienie', d: 'Smakołyk przy nosie, powoli przesuń nad głową do tyłu. Pupa ląduje — „Tak!”.', goal: R2 },
@@ -81,7 +117,7 @@ export const EXERCISES = [
     mistakes: ['Powtarzanie „siad, siad, SIAD” — pies uczy się, że pierwsze nie liczy się.', 'Wciskanie zadu ręką.'],
   },
   {
-    id: 'waruj', name: 'Waruj (leżeć)', cat: 'obed', lvl: 1, cue: 'Waruj', signal: 'Dłoń płasko w dół', pre: ['siad'],
+    calm: true, id: 'waruj', name: 'Waruj (leżeć)', cat: 'obed', lvl: 1, cue: 'Waruj', signal: 'Dłoń płasko w dół', pre: ['siad'],
     why: 'Najbardziej stabilna pozycja na dłuższe czekanie: w kawiarni, u weterynarza, w domu przy gościach.',
     stages: [
       { t: 'Wabienie z siadu', d: 'Smakołyk od nosa prosto w dół między przednie łapy, potem lekko do przodu po podłodze. Łokcie na ziemi — „Tak!”.', goal: R2 },
@@ -94,7 +130,7 @@ export const EXERCISES = [
     mistakes: ['Wabienie zbyt daleko do przodu — pies wstaje i idzie.'],
   },
   {
-    id: 'stoj', name: 'Stój', cat: 'obed', lvl: 2, cue: 'Stój', signal: 'Dłoń odsuwa się od nosa poziomo',
+    calm: true, id: 'stoj', name: 'Stój', cat: 'obed', lvl: 2, cue: 'Stój', signal: 'Dłoń odsuwa się od nosa poziomo',
     why: 'Przydaje się przy wycieraniu łap, czesaniu, u weterynarza i w sztuczkach.',
     stages: [
       { t: 'Wabienie z siadu', d: 'Smakołyk przy nosie, odsuń go poziomo do przodu — pies wstaje. „Tak!” gdy stoi na 4 łapach.', goal: R2 },
@@ -105,7 +141,7 @@ export const EXERCISES = [
     mistakes: [],
   },
   {
-    id: 'zostan', name: 'Zostań (3D: czas, odległość, rozproszenie)', cat: 'obed', lvl: 2, cue: 'Zostań', signal: 'Otwarta dłoń jak „stop”', pre: ['siad', 'waruj'],
+    calm: true, id: 'zostan', name: 'Zostań (3D: czas, odległość, rozproszenie)', cat: 'obed', lvl: 2, cue: 'Zostań', signal: 'Otwarta dłoń jak „stop”', pre: ['siad', 'waruj'],
     why: '„Zostań” = nie ruszaj się, aż zwolnię słowem „Wolne”. Ćwiczy się 3 rzeczy osobno: czas, odległość i rozproszenie — nigdy wszystkie naraz.',
     stages: [
       { t: 'Czas: 5 sekund', d: 'Pies w siadzie/warowaniu, „Zostań”, stój obok. Nagradzaj „Dobrze” w pozycji co 1–2 s, potem „Wolne”.', goal: '5 s, ' + R2 },
@@ -119,7 +155,7 @@ export const EXERCISES = [
     mistakes: ['Zwiększanie czasu i odległości jednocześnie.', 'Zapominanie o słowie zwalniającym — pies sam decyduje, kiedy koniec.'],
   },
   {
-    id: 'wolne', name: 'Słowo zwalniające „Wolne”', cat: 'obed', lvl: 1, cue: 'Wolne', signal: 'Dłoń w bok, zachęta',
+    calm: true, id: 'wolne', name: 'Słowo zwalniające „Wolne”', cat: 'obed', lvl: 1, cue: 'Wolne', signal: 'Dłoń w bok, zachęta',
     why: 'Mówi psu, że ćwiczenie się skończyło. Bez niego „siad” i „zostań” nie mają jasnego końca.',
     stages: [
       { t: 'Wprowadzenie', d: 'Pies w siadzie. Powiedz „Wolne”, zrób krok w bok i zachęć psa do ruszenia. Pochwała.', goal: R2 },
@@ -195,7 +231,7 @@ export const EXERCISES = [
     mistakes: ['Gonienie psa, który ma zabawkę — robi się z tego zabawa w berka.', 'Szarpanie zabawki z pyska.'],
   },
   {
-    id: 'czekaj', name: 'Czekaj (drzwi, miska, auto)', cat: 'obed', lvl: 2, cue: 'Czekaj', signal: 'Dłoń „stop”', pre: ['wolne'],
+    calm: true, id: 'czekaj', name: 'Czekaj (drzwi, miska, auto)', cat: 'obed', lvl: 2, cue: 'Czekaj', signal: 'Dłoń „stop”', pre: ['wolne'],
     why: 'Krótka pauza przed czymś fajnym. Pies nie wybiega przez drzwi ani z auta i nie rzuca się na miskę.',
     stages: [
       { t: 'Miska', d: 'Opuść miskę. Pies rusza → miska w górę. Pies czeka chwilę → „Wolne”, może jeść.', goal: '3 s czekania na miskę' },
@@ -207,7 +243,7 @@ export const EXERCISES = [
     mistakes: [],
   },
   {
-    id: 'mata', name: 'Na miejsce (mata)', cat: 'obed', lvl: 2, cue: 'Miejsce', signal: 'Wskazanie palcem na matę', pre: ['waruj'],
+    calm: true, id: 'mata', name: 'Na miejsce (mata)', cat: 'obed', lvl: 2, cue: 'Miejsce', signal: 'Wskazanie palcem na matę', pre: ['waruj'],
     why: 'Pies idzie na swoją matę i leży tam, aż go zwolnicie. Idealne przy jedzeniu, gościach, sprzątaniu.',
     stages: [
       { t: 'Mata = smakołyki', d: 'Połóż matę. Każdy krok/łapa na macie → „Tak!”, smakołyk rzucony NA matę.', goal: 'Pies sam wchodzi na matę' },
@@ -234,7 +270,7 @@ export const EXERCISES = [
 
   // ───────────── SPOKÓJ I SAMOKONTROLA ─────────────
   {
-    id: 'relaks', name: 'Relaks na macie (wyciszenie)', cat: 'calm', lvl: 2, cue: 'Odpocznij', signal: '—', pre: ['mata'],
+    calm: true, id: 'relaks', name: 'Relaks na macie (wyciszenie)', cat: 'calm', lvl: 2, cue: 'Odpocznij', signal: '—', pre: ['mata'],
     why: 'Border collie rzadko same „wyłączają się” — trzeba je tego nauczyć. Nagradzamy spokój: rozluźnienie, westchnienie, położenie głowy.',
     stages: [
       { t: 'Spokój za spokój', d: 'Siedzisz na kanapie, pies na macie. Spokojnie kładziesz smakołyk między łapy, gdy leży spokojnie. Bez markera, bez ekscytacji.', goal: '5 min spokojnego leżenia' },
@@ -293,7 +329,7 @@ export const EXERCISES = [
     collie: 'Obsesyjne gonienie piłki i cieni to częsty problem u collie — jeśli pies nie potrafi przestać, dopiszcie to w szczegółach.',
   },
   {
-    id: 'samotnosc', name: 'Zostawanie samemu w domu', cat: 'calm', lvl: 2, cue: 'Pilnuj domu', signal: '—',
+    calm: true, id: 'samotnosc', name: 'Zostawanie samemu w domu', cat: 'calm', lvl: 2, cue: 'Pilnuj domu', signal: '—',
     why: 'Pies uczy się, że Wasze wyjście jest nudne i przewidywalne. Zapobiega niszczeniu, wyciu i stresowi.',
     stages: [
       { t: 'Wyjścia w domu', d: 'Wychodź do innego pokoju na 10 s, wracaj spokojnie. Bez pożegnań.', goal: 'Pies nie idzie za Tobą' },
@@ -307,7 +343,7 @@ export const EXERCISES = [
 
   // ───────────── SZTUCZKI ─────────────
   {
-    id: 'lapa', name: 'Łapa / Druga łapa', cat: 'trick', lvl: 1, cue: 'Łapa / Druga', signal: 'Otwarta dłoń przy łapie',
+    calm: true, id: 'lapa', name: 'Łapa / Druga łapa', cat: 'trick', lvl: 1, cue: 'Łapa / Druga', signal: 'Otwarta dłoń przy łapie',
     why: 'Klasyk. Przydaje się też przy obcinaniu pazurów i wycieraniu łap.',
     stages: [
       { t: 'Łapa na pięść', d: 'Smakołyk w pięści nisko przy łapie. Pies drapie pięść → „Tak!”.', goal: R2 },
@@ -317,7 +353,7 @@ export const EXERCISES = [
     tips: [], mistakes: [],
   },
   {
-    id: 'piatka', name: 'Przybij piątkę', cat: 'trick', lvl: 1, cue: 'Piątka', signal: 'Dłoń w górze', pre: ['lapa'],
+    calm: true, id: 'piatka', name: 'Przybij piątkę', cat: 'trick', lvl: 1, cue: 'Piątka', signal: 'Dłoń w górze', pre: ['lapa'],
     why: 'Łapa w górę na wysokość Twojej dłoni — szybkie przejście z „łapy”.',
     stages: [
       { t: 'Wyżej niż łapa', d: 'Dłoń z „łapy” podnoś stopniowo i obracaj pionowo.', goal: 'Uderza w pionową dłoń' },
@@ -359,7 +395,7 @@ export const EXERCISES = [
     tips: [], mistakes: [],
   },
   {
-    id: 'uklon', name: 'Ukłon', cat: 'trick', lvl: 2, cue: 'Ukłon', signal: 'Dłoń w dół przed sobą',
+    calm: true, id: 'uklon', name: 'Ukłon', cat: 'trick', lvl: 2, cue: 'Ukłon', signal: 'Dłoń w dół przed sobą',
     why: 'Przód w dół, pupa w górze — świetne rozciąganie przed bieganiem.',
     stages: [
       { t: 'Wabienie ze stania', d: 'Pies stoi. Smakołyk od nosa w dół między łapy. Łokcie w dół, pupa w górze → „Tak!”. Gdy pies się kładzie, podłóż dłoń pod brzuch.', goal: R2 },
@@ -379,7 +415,7 @@ export const EXERCISES = [
     tips: [], mistakes: [],
   },
   {
-    id: 'cofanie', name: 'Cofanie', cat: 'trick', lvl: 2, cue: 'Cofnij', signal: 'Dłoń pcha powietrze do psa',
+    calm: true, id: 'cofanie', name: 'Cofanie', cat: 'trick', lvl: 2, cue: 'Cofnij', signal: 'Dłoń pcha powietrze do psa',
     why: 'Świadomość tylnych łap — collie zwykle słabo o nich „wiedzą”. Przydaje się w wąskich przejściach.',
     stages: [
       { t: 'Korytarz', d: 'W wąskim przejściu (np. między kanapą a ścianą) idziesz w stronę psa. Krok w tył → „Tak!”, nagroda rzucona za psa.', goal: '1 krok w tył 8 z 10' },
@@ -442,7 +478,7 @@ export const EXERCISES = [
     collie: 'To jedno z najlepszych „męczących” ćwiczeń dla border collie.',
   },
   {
-    id: 'wstyd', name: 'Wstydzi się (łapa na nos)', cat: 'trick', lvl: 3, cue: 'Wstyd', signal: 'Dłoń na twarzy',
+    calm: true, id: 'wstyd', name: 'Wstydzi się (łapa na nos)', cat: 'trick', lvl: 3, cue: 'Wstyd', signal: 'Dłoń na twarzy',
     why: 'Pies zakrywa łapą pyszczek. Wymaga precyzji i cierpliwości.',
     stages: [
       { t: 'Karteczka na nosie', d: 'Delikatnie przyklej mały kawałek taśmy malarskiej na kufę. Ruch łapy w stronę nosa → „Tak!”.', goal: 'Łapa do nosa 8 z 10' },

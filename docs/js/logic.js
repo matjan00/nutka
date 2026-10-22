@@ -74,6 +74,20 @@ export function planToday({ progress, sessions, exercises, day, n = 4 }) {
   return picked;
 }
 
+// Minutes spent in the kennel on a day (a stay counts for the day it started; a running stay counts up to now).
+export function kennelMinutes(stays, day, now = Date.now()) {
+  let ms = 0;
+  for (const k of stays) {
+    if (k.day !== day) continue;
+    const s = Date.parse(k.start), e = k.end ? Date.parse(k.end) : now;
+    if (e > s) ms += e - s;
+  }
+  return Math.round(ms / 60000);
+}
+
+// 1-based day number of a behaviorist plan.
+export const planDay = (p, day) => daysBetween(p.start, day) + 1;
+
 // Consecutive days with at least one session, ending today (or yesterday if nothing yet today).
 export function streak(sessions, today) {
   const days = new Set(sessions.map((s) => s.day));

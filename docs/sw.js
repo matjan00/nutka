@@ -1,11 +1,11 @@
 // Offline support: app files are served "stale-while-revalidate" (the saved copy opens instantly, also with
 // no signal on a walk, and a fresh copy is fetched in the background). Fonts are cached once.
 // Supabase calls are never cached. version.json is never cached (update check).
-const VERSION = 'nutka-v2';
+const VERSION = 'nutka-v3';
 const CORE = ['./', 'index.html', 'style.css', 'manifest.webmanifest', 'icon.svg', 'icon-192.png',
   'js/app.js', 'js/data.js', 'js/store.js', 'js/sync-cursor.js', 'js/config.js', 'js/util.js', 'js/logic.js', 'js/ui.js', 'js/comp.js',
   'js/exercises.js', 'js/update.js', 'js/version.js', 'js/supabase.js',
-  'js/install.js', 'js/s-today.js', 'js/s-library.js', 'js/s-session.js', 'js/s-progress.js', 'js/s-tasks.js', 'js/s-more.js'];
+  'js/install.js', 'js/s-plan.js', 'js/s-today.js', 'js/s-library.js', 'js/s-session.js', 'js/s-progress.js', 'js/s-tasks.js', 'js/s-more.js'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE.map((u) => new Request(u, { cache: 'reload' }))).catch(() => {})).then(() => self.skipWaiting()));

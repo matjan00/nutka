@@ -4,7 +4,8 @@ import * as D from './data.js';
 import { CATEGORIES } from './exercises.js';
 import { weekly, streak, bestStreak, overallProgress, BADGES, badgeContext } from './logic.js';
 import { icon, ring, openSheet, toast, confirmSheet } from './ui.js';
-import { esc, dayKey, fmtDay, fmtRelDay, fmtDur, plural, uid } from './util.js';
+import { esc, dayKey, fmtDay, fmtRelDay, fmtDur, plural, uid, addDays } from './util.js';
+import { kennelMinutes } from './logic.js';
 import { header, exBadge, stageBar, sessionRow, whoChip, stageText, emptyState } from './comp.js';
 
 export function render() {
@@ -21,6 +22,7 @@ export function render() {
 
   return `${header({ title: 'Postęp', sub: `${D.dogName()} · ${sessions.length} ${plural(sessions.length, 'trening', 'treningi', 'treningów')} razem` })}
 
+  ${planSummary()}
   <section class="stats-grid">
     <div class="stat card"><p class="eyebrow">Ten tydzień</p><strong>${thisW.a + thisW.b}</strong><small>${plural(thisW.a + thisW.b, 'sesja', 'sesje', 'sesji')} · ${Math.round(thisW.min)} min</small></div>
     <div class="stat card"><p class="eyebrow">Seria</p><strong>${st} ${icon('flame', st ? 'flame-i' : 'dim')}</strong><small>najdłuższa: ${best} ${plural(best, 'dzień', 'dni', 'dni')}</small></div>
@@ -55,6 +57,18 @@ export function render() {
 
   <section><h2 class="sec-title">Historia treningów</h2>
     ${sessions.length ? `<div class="list">${sessions.slice(0, 40).map(sessionRow).join('')}</div>` : emptyState('Jeszcze bez treningów', 'Pierwsza sesja z planu dnia pojawi się tutaj.')}</section>`;
+}
+
+function planSummary() {
+  const p = D.activeProtocol();
+  if (!p) return '';
+  const today = dayKey(), days = [];
+  for (let d = p.start; d <= today && days.length < (p.days || 7); d = addDays(d, 1)) days.push(d);
+  const meals = days.reduce((a, d) => a + Math.min(p.meals, D.mealsOf(d).length), 0);
+  const stays = D.kennelStays();
+  const avg = days.length ? Math.round(days.reduce((a, d) => a + kennelMinutes(stays, d), 0) / days.length) : 0;
+  return `<a class="card plan-link" href="#/plan"><div class="grow"><p class="eyebrow">Zalecenia behawiorystki</p>
+    <strong>Posiłki ${meals}/${days.length * p.meals} · kenel średnio ${Math.floor(avg / 60)} h ${avg % 60} min/dzień</strong></div>${icon('next')}</a>`;
 }
 
 const TAGS = { win: 'Sukces', issue: 'Problem', info: 'Obserwacja' };

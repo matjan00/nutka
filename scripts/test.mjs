@@ -1,6 +1,6 @@
 // Quick checks of the training logic: node scripts/test.mjs
 import assert from 'node:assert/strict';
-import { planToday, readyToAdvance, streak, bestStreak, weekly, tasksForDay, overallProgress } from '../docs/js/logic.js';
+import { kennelMinutes, planDay, planToday, readyToAdvance, streak, bestStreak, weekly, tasksForDay, overallProgress } from '../docs/js/logic.js';
 import { EXERCISES } from '../docs/js/exercises.js';
 import { stableId, weekStart, plural, addDays } from '../docs/js/util.js';
 
@@ -66,6 +66,13 @@ t('overall progress', () => {
   const p = overallProgress([{ exId: 'siad', active: true, stage: 2 }, { exId: 'lapa', mastered: true }], EXERCISES);
   assert.equal(p.all, 5 + 3);
   assert.equal(p.done, 2 + 3);
+});
+
+t('kennel minutes per day, running stay counts to now', () => {
+  const st = [{ day: '2026-10-22', start: '2026-10-22T08:00:00Z', end: '2026-10-22T10:30:00Z' }, { day: '2026-10-22', start: '2026-10-22T12:00:00Z', end: null }, { day: '2026-10-21', start: '2026-10-21T08:00:00Z', end: '2026-10-21T09:00:00Z' }];
+  assert.equal(kennelMinutes(st, '2026-10-22', Date.parse('2026-10-22T13:00:00Z')), 210);
+  assert.equal(kennelMinutes(st, '2026-10-21'), 60);
+  assert.equal(planDay({ start: '2026-10-22' }, '2026-10-28'), 7);
 });
 
 t('utils', () => {

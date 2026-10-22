@@ -220,6 +220,7 @@ async function finishWelcome() {
   for (const id of wz.known) await D.markMastered(id);
   for (const id of wz.goals) if (!wz.known.has(id)) await D.setProgress(id, { active: true, startedAt: dayKey() });
   if (!D.tasks().length) for (const [i, t] of D.STARTER_TASKS.entries()) await D.saveTask({ ...t, id: stableId('starter-task:' + i), from: dayKey() });
+  await D.adoptFirstProtocol();
   location.hash = '#/';
   toast(`Witaj w Nutce${wz.dog ? ', ' + wz.dog : ''}!`, { celebrate: true });
 }

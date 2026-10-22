@@ -45,9 +45,11 @@ function list() {
 function row(e) {
   const p = D.progress(e.id);
   const status = p.mastered ? `<span class="status mastered">${icon('star')} Opanowane</span>`
-    : p.active ? stageBar(p.stage || 0, e.stages.length) : `<span class="status">${e.stages.length} ${plural(e.stages.length, 'etap', 'etapy', 'etapów')}</span>`;
+    : p.active ? stageBar(p.stage || 0, e.stages.length)
+    : p.pausedByPlan ? '<span class="status">wstrzymane</span>'
+    : `<span class="status">${e.stages.length} ${plural(e.stages.length, 'etap', 'etapy', 'etapów')}</span>`;
   return `<a class="list-row ex-row" href="#/ex/${esc(e.id)}">${exBadge(e)}
-    <span class="grow"><strong>${esc(e.name)}${e.custom ? ' <em class="own">własne</em>' : ''}</strong><small>${levelDots(e.lvl)} ${esc(LEVELS[e.lvl] || '')}</small></span>
+    <span class="grow"><strong>${esc(e.name)}${e.custom ? ' <em class="own">własne</em>' : ''}</strong><small>${levelDots(e.lvl)} ${esc(LEVELS[e.lvl] || '')}${e.calm && e.cat !== 'beh' ? ' · <span class="calm-tag">spokojne</span>' : ''}</small></span>
     ${status}</a>`;
 }
 
@@ -71,6 +73,7 @@ export function renderDetail({ id }) {
   return `${header({ title: ex.name, back: true, right: ex.custom ? `<button class="icon-btn" data-act="custom-edit" data-id="${esc(id)}" aria-label="Edytuj">${icon('edit')}</button>` : '' })}
   <div class="detail-meta">${exBadge(ex, 'lg')}<div><p class="cat-label cat-${esc(ex.cat)}">${esc(catName(ex.cat))}</p><p>${levelDots(ex.lvl)} ${esc(LEVELS[ex.lvl] || '')} · ${ex.stages.length} ${plural(ex.stages.length, 'etap', 'etapy', 'etapów')}</p></div></div>
   ${status}
+  ${D.activeProtocol() && !ex.calm ? `<p class="plan-note">${icon('info')} <span>Na czas zaleceń behawiorystki to ćwiczenie czeka — teraz tylko spokojne, niepobudzające zadania${(D.activeProtocol().noWalks && ['smycz', 'noga', 'mijanie', 'przywolanie', 'chowany'].includes(ex.id)) ? ' i bez spacerów' : ''}.</span></p>` : ''}
   <div class="row gap mt">
     <button class="btn secondary grow" data-act="train-one" data-id="${esc(id)}">${icon('play')} Ćwicz teraz</button>
     ${!p.mastered ? `<button class="btn ghost" data-act="master" data-id="${esc(id)}">${icon('star')} Już umie</button>` : ''}

@@ -96,7 +96,7 @@ export const saveWord = (w) => store.put('word', w);
 export const removeWord = (id) => store.remove(id);
 
 // Starter set for a 2-year-old border collie; used by onboarding.
-export const STARTER_GOALS = ['marker', 'patrz', 'przywolanie', 'smycz', 'zostan', 'relaks', 'obrot', 'szukaj'];
+export const STARTER_GOALS = ['reka', 'podazanie', 'kenel', 'marker', 'patrz', 'dotknij', 'lapa'];
 export const BASICS_CHECK = ['imie', 'siad', 'waruj', 'lapa', 'wolne', 'czekaj', 'stoj', 'aport'];
 export const STARTER_TASKS = [
   { title: 'Spacer węchowy (min. 20 min, dużo wąchania)', who: 'both', repeat: 'daily', order: 1 },
@@ -106,5 +106,63 @@ export const STARTER_TASKS = [
   { title: 'Czesanie', who: 'both', repeat: 'weekly', wd: [2, 6], order: 5 },
   { title: 'Kontrola pazurów, uszu i zębów', who: 'both', repeat: 'weekly', wd: [6], order: 6 },
 ];
+
+// ---------- behaviorist plan ("zalecenia") ----------
+// protocol: { title, start, days, diagnosis, meals (per day), kennelMin (per day), noWalks, rules[], notes, active }
+// meal: one row per day+slot { day, n, how[], by, at, note }   kennel: one stay { day, start, end|null, by }
+export const PROTOCOL_ID = 'protocol-1';
+export const FIRST_PROTOCOL = {
+  id: PROTOCOL_ID,
+  title: 'Zalecenia po 1. spotkaniu',
+  diagnosis: 'Pies nadmiernie kontrolujący środowisko',
+  days: 7, meals: 3, kennelMin: 360, noWalks: true, active: true, notes: '',
+  rules: [
+    'Posiłki 3 razy dziennie, tylko na dworze: skarmianie z ręki za nic, podążanie albo spokojne, niepobudzające sztuczki.',
+    'Tydzień bez spacerów.',
+    'Więcej kenelowania w domu — minimum 6 godzin w ciągu dnia.',
+  ],
+};
+export const protocols = () => store.all('protocol').sort((a, b) => (a.start < b.start ? 1 : -1));
+export const activeProtocol = (day = dayKey()) => protocols().find((p) => p.active && p.start <= day) || null;
+export const saveProtocol = (p) => store.put('protocol', p);
+
+export const MEAL_HOW = { reka: 'Z ręki za nic', podazanie: 'Podążanie', sztuczki: 'Spokojne sztuczki' };
+const mealId = (day, n) => stableId(`meal:${day}:${n}`);
+export const meal = (day, n) => store.get(mealId(day, n)) || null;
+export const mealsOf = (day) => store.all('meal').filter((m) => m.day === day);
+export const allMeals = () => store.all('meal');
+export const saveMeal = (m) => store.put('meal', { ...m, id: mealId(m.day, m.n) });
+export const removeMeal = (day, n) => store.remove(mealId(day, n));
+
+export const kennelStays = () => store.all('kennel').sort((a, b) => (a.start < b.start ? -1 : 1));
+export const runningKennel = () => kennelStays().find((k) => !k.end) || null;
+export const startKennel = () => store.put('kennel', { day: dayKey(), start: new Date().toISOString(), end: null, by: me() });
+export const stopKennel = (k) => store.put('kennel', { ...k, end: new Date().toISOString() });
+export const saveKennel = (k) => store.put('kennel', k);
+export const removeKennel = (id) => store.remove(id);
+
+// Exercises that fit the plan: the behaviorist's ones plus calm, non-arousing tricks.
+export const PLAN_FRIENDLY = (e) => e.cat === 'beh' || e.calm;
+
+// One-time switch of an existing setup to the behaviorist's plan: pause walk-based and exciting exercises,
+// pause starter tasks that clash (walks, puzzle feeding at home, training sessions), add the plan's exercises.
+// Uses stable ids, so running it on both phones gives the same result.
+export async function adoptFirstProtocol() {
+  if (store.get(PROTOCOL_ID)) return false;
+  await saveProtocol({ ...FIRST_PROTOCOL, start: dayKey() });
+  for (const p of progressList()) {
+    const ex = exercise(p.exId);
+    if (p.active && ex && !PLAN_FRIENDLY(ex)) await setProgress(p.exId, { active: false, pausedByPlan: true });
+  }
+  for (const id of ['reka', 'podazanie', 'kenel', 'dotknij', 'lapa']) {
+    const p = progress(id);
+    if (!p.active && !p.mastered) await setProgress(id, { active: true, startedAt: dayKey() });
+  }
+  for (let i = 0; i < 4; i++) {
+    const t = store.get(stableId('starter-task:' + i));
+    if (t && !t.archived) await saveTask({ ...t, archived: true, pausedByPlan: true });
+  }
+  return true;
+}
 
 export { store };

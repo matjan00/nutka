@@ -8,11 +8,21 @@ import { exBadge, stageText, avatar, sessionRow, whoChip, assigneeChip, emptySta
 import { syncLine } from './s-more.js';
 import { draft, startSession } from './s-session.js';
 import { installCard, install } from './install.js';
+import { planHero, mealsCard, kennelCard, mountLive } from './s-plan.js';
+
+// While a behaviorist's plan is on, the training plan only uses calm tricks (the plan's own exercises happen at meals).
+function todaysPlan(day, protocol) {
+  const all = D.exercises();
+  const exercises = protocol ? all.filter((e) => e.calm && e.cat !== 'beh') : all;
+  return planToday({ progress: D.progressList(), sessions: D.sessions(), exercises, day, n: protocol ? 3 : D.settings().perSession || 4 });
+}
+export const mount = (root) => mountLive(root);
 
 export function render() {
   const day = dayKey(), s = D.settings(), meK = D.me();
-  const sessions = D.sessions(), exercises = D.exercises();
-  const plan = planToday({ progress: D.progressList(), sessions, exercises, day, n: s.perSession || 4 });
+  const sessions = D.sessions();
+  const protocol = D.activeProtocol(day);
+  const plan = todaysPlan(day, protocol);
   const week = weekly(sessions, day, 1)[0];
   const wkCount = week.a + week.b, goal = s.weeklyGoal || 10;
   const st = streak(sessions, day);
@@ -32,7 +42,7 @@ export function render() {
   ${D.store.configured && D.store.syncState().status === 'signed-out' ? `<button class="banner" data-act="go" data-to="#/settings">${icon('sync')}<span><strong>Zaloguj się</strong><small>Żeby dzielić postępy z drugim telefonem</small></span>${icon('next')}</button>` : ''}
   ${dr ? `<button class="banner live" data-act="go" data-to="#/session">${icon('timer')}<span><strong>Trening w toku</strong><small>${dr.items.length} ${plural(dr.items.length, 'ćwiczenie', 'ćwiczenia', 'ćwiczeń')} — wróć i dokończ</small></span>${icon('next')}</button>` : ''}
 
-  <section class="hero card">
+  ${protocol ? planHero(protocol, day) + mealsCard(protocol, day) + kennelCard(protocol, day) : `<section class="hero card">
     <div class="hero-ring">${ring(wkCount / goal, 84, 9)}<div class="hero-ring-num"><strong>${wkCount}</strong><small>/ ${goal}</small></div></div>
     <div class="hero-text">
       <p class="eyebrow">Ten tydzień</p>
@@ -43,10 +53,11 @@ export function render() {
       </div>
       <p class="split">${whoChip('a')} ${week.a} &nbsp; ${whoChip('b')} ${week.b}</p>
     </div>
-  </section>
+  </section>`}
 
   <section class="card">
-    <div class="card-head"><h2>${todays.length ? 'Następny trening' : 'Plan na dziś'}</h2><span class="muted small">${plan.length ? `~${Math.max(5, plan.length * 2)} min` : ''}</span></div>
+    <div class="card-head"><h2>${protocol ? 'Spokojne sztuczki' : todays.length ? 'Następny trening' : 'Plan na dziś'}</h2><span class="muted small">${plan.length ? `~${Math.max(5, plan.length * 2)} min` : ''}</span></div>
+    ${protocol ? '<p class="muted small">Tylko niepobudzające ćwiczenia — najlepiej przy posiłku na dworze. Pozostałe ćwiczenia czekają do końca zaleceń.</p>' : ''}
     ${plan.length ? `<ul class="plan">${plan.map((p) => {
       const ex = D.exercise(p.exId);
       return `<li><button class="plan-row" data-act="go" data-to="#/ex/${esc(p.exId)}">${exBadge(ex)}
@@ -90,8 +101,7 @@ function tipCard(day) {
 export const actions = {
   install: () => install(),
   'start-plan': () => {
-    const s = D.settings();
-    const plan = planToday({ progress: D.progressList(), sessions: D.sessions(), exercises: D.exercises(), day: dayKey(), n: s.perSession || 4 });
+    const plan = todaysPlan(dayKey(), D.activeProtocol());
     startSession(plan.map((p) => ({ exId: p.exId, stage: p.stage })));
   },
   'start-empty': () => startSession([]),

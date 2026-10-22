@@ -5,7 +5,7 @@ import { icon } from './ui.js';
 import { esc, fmtRelDay } from './util.js';
 import * as D from './data.js';
 
-export const CAT_ICON = { base: 'target', obed: 'paw', calm: 'moon', trick: 'sparkle', brain: 'search' };
+export const CAT_ICON = { beh: 'note', base: 'target', obed: 'paw', calm: 'moon', trick: 'sparkle', brain: 'search' };
 export const catName = (id) => CATEGORIES.find((c) => c.id === id)?.name || 'Inne';
 export const catShort = (id) => CATEGORIES.find((c) => c.id === id)?.short || 'Inne';
 

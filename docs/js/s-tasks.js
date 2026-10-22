@@ -38,7 +38,7 @@ export function render() {
       : emptyState('Brak zadań tego dnia', 'Dodajcie zadania — codzienne (spacer węchowy), co tydzień (czesanie) lub jednorazowe (wizyta u weta).');
   } else {
     body = all.length ? `<div class="list">${all.map((t) => `<button class="list-row" data-act="t-edit" data-id="${esc(t.id)}">
-      <span class="grow"><strong>${esc(t.title)}</strong><small>${esc(repeatText(t))} · ${assigneeChip(t.who)}</small></span>${icon('edit', 'dim')}</button>`).join('')}</div>`
+      <span class="grow"><strong>${esc(t.title)}</strong><small>${t.archived ? 'wstrzymane · ' : ''}${esc(repeatText(t))} · ${assigneeChip(t.who)}</small></span>${icon('edit', 'dim')}</button>`).join('')}</div>`
       : emptyState('Brak zadań', 'Dodaj pierwsze zadanie przyciskiem poniżej.');
   }
 
@@ -75,6 +75,7 @@ function taskSheet(t) {
       <div class="wd-pick" data-show="weekly">${WD_SHORT.map((d, i) => `<label><input type="checkbox" name="wd" value="${i}" ${(e.wd || []).includes(i) ? 'checked' : ''}><span>${d}</span></label>`).join('')}</div>
       <label class="field" data-show="once"><span>Termin</span><input type="date" name="due" value="${esc(e.due || dayKey())}"></label>
       <label class="field"><span>Notatka</span><textarea name="note" rows="2">${esc(e.note || '')}</textarea></label>
+      <label class="toggle-line"><input type="checkbox" name="archived" ${e.archived ? 'checked' : ''}> Wstrzymane (nie pokazuj do odhaczania)</label>
       <div class="row gap">${t ? `<button type="button" class="btn danger-ghost" data-del>${icon('trash')}</button>` : ''}<button class="btn primary grow big" type="submit">Zapisz</button></div></form>`,
     onMount: (el, close) => {
       const form = el.querySelector('#tf');
@@ -89,7 +90,7 @@ function taskSheet(t) {
         const wd = f.getAll('wd').map(Number);
         const repeat = f.get('repeat');
         if (repeat === 'weekly' && !wd.length) { toast('Wybierz przynajmniej jeden dzień'); return; }
-        await D.saveTask({ ...e, title: String(f.get('title')).trim(), who: f.get('who'), repeat, wd, due: f.get('due') || null, note: String(f.get('note')).trim(), from: e.from || dayKey() });
+        await D.saveTask({ ...e, title: String(f.get('title')).trim(), who: f.get('who'), repeat, wd, due: f.get('due') || null, note: String(f.get('note')).trim(), from: e.from || dayKey(), archived: !!f.get('archived') });
         close();
         toast('Zapisano zadanie');
       };

@@ -7,13 +7,15 @@ import * as Session from './s-session.js';
 import * as Progress from './s-progress.js';
 import * as Tasks from './s-tasks.js';
 import * as More from './s-more.js';
+import * as Plan from './s-plan.js';
 import { icon, toast } from './ui.js';
 import { checkForUpdate, applyUpdate } from './update.js';
 
 const { store } = D;
 
 const ROUTES = [
-  { re: /^#\/?$/, tab: 'today', render: Today.render, actions: Today.actions },
+  { re: /^#\/?$/, tab: 'today', render: Today.render, mount: Today.mount, actions: Today.actions },
+  { re: /^#\/plan$/, tab: 'today', render: Plan.renderPlan, actions: Plan.actions },
   { re: /^#\/lib$/, tab: 'lib', render: Lib.render, mount: Lib.mount, actions: Lib.actions },
   { re: /^#\/ex\/([\w-]+)$/, tab: 'lib', render: (m) => Lib.renderDetail({ id: m[1] }), mount: Lib.mountDetail, actions: Lib.actions },
   { re: /^#\/session$/, tab: null, render: Session.render, mount: Session.mount, actions: Session.actions },
@@ -29,6 +31,7 @@ const GLOBAL = {
   back: () => { if (history.length > 1) history.back(); else location.hash = '#/'; },
   'session-detail': (el) => Progress.sessionDetail(el.dataset.id),
   ...Today.actions,
+  ...Plan.actions,
 };
 
 const TABS = [
@@ -93,7 +96,9 @@ window.addEventListener('bip', () => softRender());
   await store.openStore();
   store.onChange(() => softRender());
   render();
-  if (store.configured) store.syncNow().catch(() => {});
+  // Switch an existing setup to the behaviorist's plan once (after pulling the other phone's changes).
+  const adopt = () => { if (D.settings().onboarded) D.adoptFirstProtocol().catch((e) => console.error(e)); };
+  if (store.configured) store.syncNow().catch(() => {}).finally(adopt); else adopt();
   if (D.settings().onboarded && !D.hasChosenMe()) More.askWhoAmI();
   if ('serviceWorker' in navigator && location.hostname !== 'localhost') {
     navigator.serviceWorker.register('sw.js').catch(() => {});
