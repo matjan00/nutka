@@ -13,12 +13,13 @@ const view = { q: '', cat: 'all', filter: 'all' };
 export function render() {
   const plan = D.progressList().filter((p) => p.active).length;
   const done = D.progressList().filter((p) => p.mastered).length;
-  return `${header({ title: 'Ćwiczenia', sub: `${plan} w planie · ${done} opanowanych`, right: `<button class="icon-btn" data-act="go" data-to="#/cues" aria-label="Słowniczek komend">${icon('words')}</button>` })}
+  return `${header({ title: 'Ćwiczenia', sub: `${plan} ćwiczymy · ${done} opanowanych`, right: `<button class="btn small ghost" data-act="go" data-to="#/cues">${icon('words')} Słowniczek</button>` })}
   <label class="search">${icon('search')}<input type="search" id="lib-q" value="${esc(view.q)}" placeholder="Szukaj ćwiczenia…" aria-label="Szukaj"></label>
-  <div class="seg" role="tablist">${[['all', 'Wszystkie'], ['plan', 'W planie'], ['mastered', 'Opanowane'], ['new', 'Do odkrycia']].map(([k, t]) =>
+  <div class="seg" role="tablist">${[['all', 'Wszystkie'], ['plan', 'Ćwiczymy'], ['mastered', 'Opanowane'], ['new', 'Nowe']].map(([k, t]) =>
     `<button role="tab" aria-selected="${view.filter === k}" data-act="lib-filter" data-k="${k}">${t}</button>`).join('')}</div>
   <div class="chips scroll">${[['all', 'Wszystkie kategorie'], ...CATEGORIES.map((c) => [c.id, c.short])].map(([k, t]) =>
     `<button class="chip ${view.cat === k ? 'on' : ''} ${k !== 'all' ? 'cat-' + k : ''}" data-act="lib-cat" data-k="${k}">${esc(t)}</button>`).join('')}</div>
+  ${D.activeProtocol() ? '<p class="hint">„Wstrzymane” ćwiczenia czekają do końca zaleceń behawiorysty — teraz tylko spokojne, oznaczone „spokojne”.</p>' : ''}
   <div id="lib-list">${list()}</div>
   <button class="btn ghost wide mt" data-act="custom-new">${icon('plus')} Dodaj własne ćwiczenie</button>`;
 }
@@ -65,10 +66,10 @@ export function renderDetail({ id }) {
   let status;
   if (p.mastered) status = `<div class="status-box mastered">${icon('star')}<div><strong>Opanowane</strong><small>${p.masteredAt ? 'od ' + esc(fmtDay(p.masteredAt)) : ''} · pojawi się czasem jako powtórka</small></div>
       <button class="btn ghost small" data-act="unmaster" data-id="${esc(id)}">Wróć do nauki</button></div>`;
-  else if (p.active) status = `<div class="status-box"><div class="grow"><strong>W planie · etap ${cur + 1} z ${ex.stages.length}</strong>${stageBar(cur, ex.stages.length)}</div>
-      <button class="btn ghost small" data-act="deactivate" data-id="${esc(id)}">Wyjmij z planu</button></div>`;
-  else status = `<div class="status-box new"><div class="grow"><strong>Jeszcze nie w planie</strong><small>Dodajcie, a pojawi się w planie dnia.</small></div>
-      <button class="btn primary small" data-act="activate" data-id="${esc(id)}">${icon('plus')} Do planu</button></div>`;
+  else if (p.active) status = `<div class="status-box"><div class="grow"><strong>Ćwiczymy · etap ${cur + 1} z ${ex.stages.length}</strong>${stageBar(cur, ex.stages.length)}</div>
+      <button class="btn ghost small" data-act="deactivate" data-id="${esc(id)}">Odłóż na później</button></div>`;
+  else status = `<div class="status-box new"><div class="grow"><strong>Jeszcze nie ćwiczymy</strong><small>Dodajcie, a pojawi się w planie dnia.</small></div>
+      <button class="btn primary small" data-act="activate" data-id="${esc(id)}">${icon('plus')} Ćwiczymy</button></div>`;
 
   return `${header({ title: ex.name, back: true, right: ex.custom ? `<button class="icon-btn" data-act="custom-edit" data-id="${esc(id)}" aria-label="Edytuj">${icon('edit')}</button>` : '' })}
   <div class="detail-meta">${exBadge(ex, 'lg')}<div><p class="cat-label cat-${esc(ex.cat)}">${esc(catName(ex.cat))}</p><p>${levelDots(ex.lvl)} ${esc(LEVELS[ex.lvl] || '')} · ${ex.stages.length} ${plural(ex.stages.length, 'etap', 'etapy', 'etapów')}</p></div></div>
@@ -82,7 +83,7 @@ export function renderDetail({ id }) {
   <section class="card cues-card">
     <h2>Wasza komenda</h2>
     <p class="muted small">Używajcie oboje tego samego słowa i gestu — pies nie zna synonimów.</p>
-    <div class="grid2">
+    <div class="grid1">
       <label class="field"><span>Słowo</span><input data-cue="cue" data-id="${esc(id)}" value="${esc(p.cue ?? ex.cue ?? '')}" placeholder="${esc(ex.cue || '')}"></label>
       <label class="field"><span>Gest</span><input data-cue="signal" data-id="${esc(id)}" value="${esc(p.signal ?? (ex.signal === '—' ? '' : ex.signal) ?? '')}" placeholder="np. dłoń w górę"></label>
     </div>

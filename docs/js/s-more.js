@@ -3,7 +3,7 @@
 import * as D from './data.js';
 import { EXERCISES } from './exercises.js';
 import { icon, toast, confirmSheet, openSheet } from './ui.js';
-import { esc, dayKey, stableId, uid } from './util.js';
+import { esc, dayKey, stableId, uid, plural } from './util.js';
 import { header, exBadge, avatar } from './comp.js';
 import { APP_VERSION, checkForUpdate, applyUpdate } from './update.js';
 import { isInstalled } from './install.js';
@@ -14,8 +14,9 @@ const { store } = D;
 export function syncLine() {
   if (!store.configured) return '<p class="sync-line">Dane zapisane na tym telefonie</p>';
   const s = store.syncState();
-  const txt = { idle: s.at ? 'Zsynchronizowane' : 'Połączone', syncing: 'Synchronizuję…', offline: 'Offline — zsynchronizuję później', 'signed-out': 'Nie zalogowano — dane tylko na tym telefonie', error: 'Błąd synchronizacji' }[s.status] || '';
-  return `<p class="sync-line ${s.status}">${icon('sync')} ${esc(txt)}${s.pending ? ` · ${s.pending} do wysłania` : ''}</p>`;
+  const txt = { idle: s.at ? 'Zsynchronizowane z drugim telefonem' : 'Połączone', syncing: 'Synchronizuję…', offline: 'Brak internetu — wyślę zmiany, gdy wróci', 'signed-out': 'Zapisane tylko na tym telefonie — zaloguj się w Ustawieniach, żeby dzielić z drugim', error: 'Nie udało się zsynchronizować — dane są bezpieczne na telefonie' }[s.status] || '';
+  const waiting = s.pending && (s.status === 'offline' || s.status === 'error') ? ` · ${s.pending} ${plural(s.pending, 'zmiana czeka', 'zmiany czekają', 'zmian czeka')}` : '';
+  return `<p class="sync-line ${s.status}">${icon('sync')} ${esc(txt)}${waiting}</p>`;
 }
 
 // ---------- settings ----------
@@ -54,6 +55,7 @@ export function renderSettings() {
 
   <section class="card">
     <h2>Synchronizacja</h2>
+    ${D.local.get('nutka.setupHidden') === '1' ? '<button class="link small" data-act="setup-show">Pokazuj znowu „Dokończ ustawienia” na ekranie Dziś</button>' : ''}
     ${syncSection()}
   </section>
 
@@ -83,7 +85,7 @@ function syncSection() {
       <label class="field"><span>Hasło</span><input type="password" name="password" autocomplete="current-password" required></label>
       <button class="btn primary wide" type="submit">Zaloguj</button></form>`;
   }
-  return `${syncLine()}${s.error ? `<p class="small danger">${esc(s.error)}</p>` : ''}
+  return `${syncLine()}${s.error ? '<p class="small danger">Sprawdź internet i stuknij „Synchronizuj”. Jeśli dalej nie działa, wyloguj się i zaloguj ponownie.</p>' : ''}
     <div class="row gap"><button class="btn ghost grow" data-act="sync-now">${icon('sync')} Synchronizuj</button><button class="btn ghost" data-act="sign-out">Wyloguj</button></div>`;
 }
 
@@ -257,6 +259,7 @@ function loginSheet() {
 export const actions = {
   'set-me': (el) => { D.setMe(el.value); toast('Zapisano'); },
   'photo-del': () => D.saveSettings({ photo: '' }),
+  'setup-show': () => { D.local.del('nutka.setupHidden'); toast('Pokażę na ekranie Dziś'); window.__rerender?.(); },
   export: () => {
     const blob = new Blob([JSON.stringify(store.exportAll(), null, 1)], { type: 'application/json' });
     const a = document.createElement('a');

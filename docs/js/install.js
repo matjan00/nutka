@@ -23,9 +23,3 @@ export async function install() {
       : `<ol class="steps"><li>Stuknij menu <b>⋮</b> w prawym górnym rogu Chrome.</li><li>Wybierz <b>Zainstaluj aplikację</b> albo <b>Dodaj do ekranu głównego</b>.</li><li>Potwierdź <b>Zainstaluj</b>.</li></ol>`,
   });
 }
-
-// Card for the top of "Dziś"; empty when already installed.
-export function installCard() {
-  if (isInstalled()) return '';
-  return `<button class="banner install" data-act="install">${icon('download')}<span><strong>Zainstaluj aplikację</strong><small>Ikona Nutki na ekranie telefonu, działa też bez internetu</small></span>${icon('next')}</button>`;
-}

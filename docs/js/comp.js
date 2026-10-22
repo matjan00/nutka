@@ -11,7 +11,7 @@ export const catShort = (id) => CATEGORIES.find((c) => c.id === id)?.short || 'I
 
 export const exBadge = (ex, size = '') => `<span class="exb cat-${esc(ex?.cat || 'obed')} ${size}" aria-hidden="true">${icon(CAT_ICON[ex?.cat] || 'paw')}</span>`;
 
-export const levelDots = (lvl) => `<span class="lvl" title="Poziom: ${LEVELS[lvl] || ''}">${[1, 2, 3].map((i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</span>`;
+export const levelDots = (lvl) => `<span class="lvl" aria-hidden="true" title="Poziom: ${LEVELS[lvl] || ''}">${[1, 2, 3].map((i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</span>`;
 
 export function stageBar(done, total) {
   return `<span class="sbar" role="img" aria-label="${done} z ${total} etapów">${Array.from({ length: total }, (_, i) => `<i class="${i < done ? 'on' : ''}"></i>`).join('')}</span>`;
@@ -32,7 +32,7 @@ export function stageText(ex, stage) {
 export function header({ title, sub = '', back = false, right = '' }) {
   return `<header class="top">
     ${back ? `<button class="icon-btn" data-act="back" aria-label="Wstecz">${icon('back')}</button>` : ''}
-    <div class="top-title">${sub ? `<p class="eyebrow">${esc(sub)}</p>` : ''}<h1>${esc(title)}</h1></div>
+    <div class="top-title"><h1 class="${title.length > 26 ? 'long' : ''}">${esc(title)}</h1>${sub ? `<p class="sub">${esc(sub)}</p>` : ''}</div>
     <div class="top-right">${right}</div>
   </header>`;
 }

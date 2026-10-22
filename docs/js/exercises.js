@@ -41,8 +41,8 @@ export const EXERCISES = [
     mistakes: ['Wołanie i zachęcanie psa — niech sam wybierze, żeby iść za Tobą.'],
   },
   {
-    id: 'kenel', name: 'Kenel — spokojny odpoczynek', cat: 'beh', lvl: 1, calm: true, cue: 'Kenel', signal: '—',
-    why: 'Kenel to miejsce, gdzie pies naprawdę odpoczywa i nie musi niczego pilnować. Psy nadmiernie kontrolujące otoczenie często w ogóle nie odpoczywają — kenel im w tym pomaga. Czas w kenelu zapisujecie w karcie „Kenel” na ekranie Dziś.',
+    id: 'kenel', name: 'Nauka spokoju w kenelu', cat: 'beh', lvl: 1, calm: true, cue: 'Kenel', signal: '—',
+    why: 'Kenel to miejsce, gdzie pies naprawdę odpoczywa i nie musi niczego pilnować. Psy nadmiernie kontrolujące otoczenie często w ogóle nie odpoczywają — kenel im w tym pomaga. Sam czas w kenelu zapisujecie w karcie „Czas w kenelu” na ekranie Dziś — tu są etapy nauki.',
     stages: [
       { t: 'Kenel to dobre miejsce', d: 'Wygodne posłanie, woda, ewentualnie gryzak. Kenel w spokojnym miejscu domu, można przykryć kocem.', goal: 'Pies sam wchodzi do kenela' },
       { t: 'Zamknięte drzwiczki', d: 'Zamykaj, gdy pies leży spokojnie. Otwieraj, gdy jest cicho — nie wtedy, gdy szczeka lub drapie.', goal: 'Spokojnie przy zamkniętych drzwiczkach' },

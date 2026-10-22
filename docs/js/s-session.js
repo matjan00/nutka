@@ -83,7 +83,7 @@ export function render() {
   return `
   <header class="top session-top">
     <button class="icon-btn" data-act="go" data-to="#/" aria-label="Wróć (trening zostaje zapisany jako szkic)">${icon('back')}</button>
-    <div class="top-title"><p class="eyebrow">Trening · ${esc(D.trainerName(d.by))} z ${esc(D.dogName())}</p><h1 class="timer" id="timer">0:00</h1></div>
+    <div class="top-title"><h1 class="timer" id="timer">0:00</h1><p class="sub">Trening · ${esc(D.trainerName(d.by))} z ${esc(D.dogName())}</p></div>
     <div class="top-right"><button class="icon-btn" data-act="discard" aria-label="Porzuć trening">${icon('trash')}</button></div>
   </header>
   <p class="hint">Stuknij <b>✓</b> po każdym udanym powtórzeniu, <b>✗</b> po nieudanym. 5–10 minut wystarczy — kończcie, gdy pies jeszcze chce więcej.</p>
@@ -114,7 +114,7 @@ function itemCard(it, i, sessions) {
   return `<article class="card sess-item ${it.passed ? 'passed' : ''}">
     <div class="sess-head">${exBadge(ex)}
       <button class="grow plain" data-act="toggle-info" data-i="${i}"><strong>${esc(ex.name)}</strong><small>${esc(stageText(ex, st))}</small></button>
-      <button class="icon-btn small" data-act="remove-item" data-i="${i}" aria-label="Usuń z treningu">${icon('x')}</button>
+      <button class="icon-btn" data-act="remove-item" data-i="${i}" aria-label="Usuń ${esc(ex.name)} z treningu">${icon('x')}</button>
     </div>
     <div class="sess-info" ${it.info ? '' : 'hidden'}>
       ${stage ? `<p>${esc(stage.d)}</p><p class="goal">${icon('target')} Cel: ${esc(stage.goal)}</p>` : `<p>Powtórka opanowanego ćwiczenia (${esc(catShort(ex.cat))}). Kilka szybkich powtórzeń w nowym miejscu lub z rozproszeniem.</p>`}
@@ -123,7 +123,7 @@ function itemCard(it, i, sessions) {
     <div class="counter">
       <button class="cnt ok" data-act="ok" data-i="${i}" aria-label="Udane powtórzenie">${icon('check')}<span>${it.ok}</span></button>
       <div class="cnt-mid"><strong>${total ? Math.round(rate * 100) + '%' : '—'}</strong><small>${total} ${total === 1 ? 'próba' : 'prób'}</small>
-        <button class="link small" data-act="undo" data-i="${i}" ${it.log.length ? '' : 'disabled'}>${icon('undo')} cofnij</button></div>
+        <button class="undo-btn" data-act="undo" data-i="${i}" ${it.log.length ? '' : 'disabled'}>${icon('undo')} cofnij</button></div>
       <button class="cnt fail" data-act="fail" data-i="${i}" aria-label="Nieudane powtórzenie">${icon('x')}<span>${it.fail}</span></button>
     </div>
     ${hint}
@@ -235,7 +235,18 @@ export const actions = {
   undo: (el) => upd(Number(el.dataset.i), (it) => { const l = it.log.pop(); if (l === 1) it.ok--; else if (l === 0) it.fail--; }),
   pass: (el) => upd(Number(el.dataset.i), (it) => { it.passed = el.checked; }),
   'toggle-info': (el) => upd(Number(el.dataset.i), (it) => { it.info = !it.info; }),
-  'remove-item': (el) => upd(Number(el.dataset.i), (_, d) => { d.items.splice(Number(el.dataset.i), 1); }),
+  'remove-item': (el) => {
+    const i = Number(el.dataset.i);
+    let removed = null;
+    upd(i, (_, d) => { removed = d.items.splice(i, 1)[0]; });
+    if (removed) toast(`Usunięto: ${D.exercise(removed.exId)?.name || 'ćwiczenie'}`, { action: 'Cofnij', onAction: () => {
+      const d = draft();
+      if (!d) return;
+      d.items.splice(Math.min(i, d.items.length), 0, removed);
+      saveDraft(d);
+      window.__rerender?.();
+    } });
+  },
   'add-ex': () => pickExercise((exId) => {
     const d = draft();
     d.items.push({ exId, stage: currentStage(exId), ok: 0, fail: 0, log: [], passed: false, note: '', info: true });

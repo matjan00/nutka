@@ -13,13 +13,31 @@ const fmtH = (min) => { const h = Math.floor(min / 60), m = min % 60; return h ?
 const hhmm = (iso) => { const d = new Date(iso); return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`; };
 
 // ---------- Today cards ----------
+// One reassuring sentence about today: what's done, what's left, and whether the kennel time is on pace
+// (6 h spread over roughly 8:00–20:00).
+function dayStatus(p, day) {
+  const meals = Math.min(p.meals, D.mealsOf(day).length);
+  const min = kennelMinutes(D.kennelStays(), day);
+  const now = new Date(), h = now.getHours() + now.getMinutes() / 60;
+  const isToday = day === dayKey();
+  if (meals >= p.meals && min >= p.kennelMin) return `Na dziś wszystko zrobione. Brawo, ${esc(D.dogName())}!`;
+  const parts = [`${meals}/${p.meals} ${p.meals === 1 ? 'posiłek' : 'posiłki'}`, `${fmtH(min)} w kenelu`];
+  if (isToday && h >= 20) {
+    return `Dziś: ${parts.join(', ')}. Nie udało się wszystko? Nic się nie stało — jutro kolejny dzień.`;
+  }
+  const expected = p.kennelMin * Math.max(0, Math.min(1, (h - 8) / 12));
+  const pace = min >= expected - 30 ? 'kenel w normie na tę porę' : `na tę porę dobrze mieć ok. ${fmtH(Math.round(expected / 30) * 30)} w kenelu`;
+  return `Dziś: ${parts.join(', ')} — ${pace}.`;
+}
+
 export function planHero(p, day) {
   const n = planDay(p, day);
   const over = p.days && n > p.days;
   return `<section class="hero card plan-hero">
     <div class="hero-text">
-      <p class="eyebrow">Zalecenia behawiorysty · ${over ? 'czas minął' : `dzień ${n}${p.days ? ` z ${p.days}` : ''}`}</p>
-      <p class="hero-line">${esc(p.diagnosis || p.title)}</p>
+      <h2 class="hero-line">${esc(p.diagnosis || p.title)}</h2>
+      <p class="sub">Zalecenia behawiorysty · <span class="nowrap">${over ? 'czas minął' : `dzień ${n}${p.days ? ` z ${p.days}` : ''}`}</span></p>
+      <p class="day-status">${dayStatus(p, day)}</p>
       <div class="hero-chips">
         ${p.noWalks ? `<span class="chip">${icon('x')} Bez spacerów</span>` : ''}
         <span class="chip">${p.meals}× posiłek na dworze</span>
@@ -39,9 +57,12 @@ export function mealsCard(p, day) {
     <p class="muted small">Z ręki za nic, podążanie albo spokojne sztuczki. Stuknij posiłek, gdy zjedzony.</p>
     <div class="meals">${slots.map((n) => {
       const m = D.meal(day, n);
-      return `<button class="meal ${m ? 'on' : ''}" data-act="meal" data-n="${n}" data-day="${day}">
+      const tricks = (m?.tricks || []).map((id) => D.exercise(id)?.name).filter(Boolean);
+      const what = m ? [...(m.how || []).filter((h) => h !== 'sztuczki' || !tricks.length).map((h) => D.MEAL_HOW[h]), ...tricks].join(', ') || 'zjedzony' : '';
+      return `<button class="meal ${m ? 'on' : ''}" data-act="meal" data-n="${n}" data-day="${day}" aria-pressed="${m ? 'true' : 'false'}"
+        aria-label="${esc(slotName(p, n))}: ${m ? 'zjedzone' : 'do zrobienia'}">
         <span class="meal-check">${icon(m ? 'check' : 'plus')}</span><strong>${esc(slotName(p, n))}</strong>
-        <small>${m ? `${esc((m.how || []).map((h) => D.MEAL_HOW[h]).join(', ') || 'zjedzony')} · ${esc(D.trainerName(m.by))}` : 'do zrobienia'}</small></button>`;
+        <small>${m ? `${esc(what)} · ${esc(D.trainerName(m.by))}` : 'do zrobienia'}</small></button>`;
     }).join('')}</div>
   </section>`;
 }
@@ -51,10 +72,11 @@ export function kennelCard(p, day) {
   const run = D.runningKennel();
   const min = kennelMinutes(stays, day);
   const pct = Math.min(1, min / (p.kennelMin || 360));
-  const today = stays.filter((k) => k.day === day);
+  // Stays shorter than a minute are mis-taps; don't list them.
+  const today = stays.filter((k) => k.day === day && (!k.end || Date.parse(k.end) - Date.parse(k.start) >= 60000));
   return `<section class="card kennel-card">
-    <div class="card-head"><h2>Kenel</h2><span class="count ${pct >= 1 ? 'ok' : ''}" id="kennel-sum">${fmtH(min)} / ${fmtH(p.kennelMin)}</span></div>
-    <div class="kbar"><i id="kennel-bar" style="width:${Math.round(pct * 100)}%"></i></div>
+    <div class="card-head"><h2>Czas w kenelu</h2><span class="count ${pct >= 1 ? 'ok' : ''}" id="kennel-sum">${fmtH(min)} / ${fmtH(p.kennelMin)}</span></div>
+    <div class="kbar" role="progressbar" aria-label="Czas w kenelu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(pct * 100)}"><i id="kennel-bar" style="transform:scaleX(${pct.toFixed(3)})"></i></div>
     ${run ? `<p class="kennel-run">${icon('moon')} ${esc(D.dogName())} jest w kenelu od <b>${hhmm(run.start)}</b>${run.day !== day ? ` (${esc(fmtDay(run.day))})` : ''}</p>
       <button class="btn primary big wide" data-act="kennel-stop">${icon('check')} Wychodzi z kenela</button>`
     : `<button class="btn primary big wide" data-act="kennel-start">${icon('moon')} Idzie do kenela — start</button>`}
@@ -75,7 +97,7 @@ export function mountLive(root) {
     if (!sum || !document.body.contains(sum)) return clearInterval(live);
     const min = kennelMinutes(D.kennelStays(), dayKey());
     sum.textContent = `${fmtH(min)} / ${fmtH(p.kennelMin)}`;
-    bar.style.width = Math.round(Math.min(1, min / p.kennelMin) * 100) + '%';
+    bar.style.transform = `scaleX(${Math.min(1, min / p.kennelMin).toFixed(3)})`;
   }, 30000);
 }
 
@@ -83,41 +105,47 @@ export function mountLive(root) {
 export function renderPlan() {
   const p = D.activeProtocol() || D.protocols()[0];
   if (!p) return `${header({ title: 'Zalecenia', back: true })}<div class="empty"><p>Brak zaleceń.</p><button class="btn primary" data-act="plan-new">Dodaj zalecenia</button></div>`;
-  const today = dayKey();
-  const len = Math.max(p.days || 7, Math.min(planDay(p, today), 28));
-  const days = Array.from({ length: len }, (_, i) => addDays(p.start, i));
-  const stays = D.kennelStays();
   const past = D.protocols().filter((x) => x.id !== p.id);
 
   return `${header({ title: 'Zalecenia', sub: p.active ? `od ${fmtDay(p.start)}` : 'zakończone', back: true, right: `<button class="icon-btn" data-act="plan-edit" data-id="${esc(p.id)}" aria-label="Edytuj">${icon('edit')}</button>` })}
   <section class="card">
-    <p class="eyebrow">${esc(p.title)}</p>
-    <h2>${esc(p.diagnosis || '')}</h2>
+    <h2>${esc(p.diagnosis || p.title)}</h2>
+    <p class="sub">${esc(p.title)}</p>
     <ol class="rules">${(p.rules || []).map((r) => `<li>${esc(r)}</li>`).join('')}</ol>
     ${p.notes ? `<p class="quote">${esc(p.notes)}</p>` : ''}
   </section>
 
   <section class="card">
     <h2>Jak idzie</h2>
-    <div class="week-table" role="table">
-      <div class="wt-row wt-head" role="row"><span>Dzień</span><span>Posiłki</span><span>Kenel</span></div>
-      ${days.map((d) => {
-        const meals = D.mealsOf(d).filter((m) => m.n <= p.meals).length;
-        const min = kennelMinutes(stays, d);
-        const future = d > today;
-        return `<div class="wt-row ${d === today ? 'today' : ''} ${future ? 'future' : ''}" role="row">
-          <span>${WD_SHORT[weekday(d)]} ${parseDay(d).getDate()}</span>
-          <span class="${!future && meals >= p.meals ? 'ok' : ''}">${future ? '—' : `${meals}/${p.meals}`}</span>
-          <span class="${!future && min >= p.kennelMin ? 'ok' : ''}">${future ? '—' : fmtH(min)}</span></div>`;
-      }).join('')}
-    </div>
+    ${weekTable(p)}
   </section>
+
 
   <div class="col gap">
     <button class="btn secondary wide" data-act="plan-new">${icon('plus')} Nowe zalecenia (po kolejnym spotkaniu)</button>
     ${p.active ? `<button class="btn ghost wide" data-act="plan-end" data-id="${esc(p.id)}">Zakończ te zalecenia</button>` : ''}
   </div>
   ${past.length ? `<h2 class="sec-title">Wcześniejsze</h2><div class="list">${past.map((x) => `<div class="list-row static"><span class="grow"><strong>${esc(x.title)}</strong><small>od ${esc(fmtDay(x.start))}${x.active ? '' : ' · zakończone'}</small></span></div>`).join('')}</div>` : ''}`;
+}
+
+// Day-by-day table of the plan (meals and kennel), also shown on Postęp.
+export function weekTable(p) {
+  const today = dayKey();
+  const len = Math.max(p.days || 7, Math.min(planDay(p, today), 28));
+  const days = Array.from({ length: len }, (_, i) => addDays(p.start, i));
+  const stays = D.kennelStays();
+  return `<div class="week-table" role="table" aria-label="Posiłki i kenel w kolejnych dniach">
+      <div class="wt-row wt-head" role="row"><span role="columnheader">Dzień</span><span role="columnheader">Posiłki</span><span role="columnheader">Kenel</span></div>
+      ${days.map((d) => {
+        const meals = D.mealsOf(d).filter((m) => m.n <= p.meals).length;
+        const min = kennelMinutes(stays, d);
+        const future = d > today;
+        return `<div class="wt-row ${d === today ? 'today' : ''} ${future ? 'future' : ''}" role="row">
+          <span role="cell">${WD_SHORT[weekday(d)]} ${parseDay(d).getDate()}</span>
+          <span role="cell" class="${!future && meals >= p.meals ? 'ok' : ''}">${future ? '—' : `${meals}/${p.meals}`}</span>
+          <span role="cell" class="${!future && min >= p.kennelMin ? 'ok' : ''}">${future ? '—' : fmtH(min)}</span></div>`;
+      }).join('')}
+    </div>`;
 }
 
 // ---------- sheets ----------
@@ -131,13 +159,17 @@ function mealSheet(day, n) {
     body: `<p class="muted small">Tylko na dworze. Spokojnie, bez nakręcania.</p>
       <p class="field-label">Jak jadła?</p>
       <div class="how">${Object.entries(D.MEAL_HOW).map(([k, t]) => `<label><input type="checkbox" name="how" value="${k}" ${how.has(k) ? 'checked' : ''}><span>${t}</span></label>`).join('')}</div>
-      ${calm.length ? `<p class="muted small">Spokojne sztuczki, które Nutka zna lub ćwiczy: ${calm.map((e) => esc(e.name)).join(', ')}.</p>` : ''}
+      ${calm.length ? `<fieldset class="tricks" ${how.has('sztuczki') ? '' : 'hidden'}><legend>Które sztuczki?</legend>
+        ${calm.map((e) => `<label><input type="checkbox" name="trick" value="${esc(e.id)}" ${(m?.tricks || []).includes(e.id) ? 'checked' : ''}><span>${esc(e.name)}</span></label>`).join('')}</fieldset>` : ''}
       <label class="field"><span>Notatka (opcjonalnie)</span><textarea rows="2" id="meal-note" placeholder="Np. spokojnie, rozpraszały ją ptaki…">${esc(m?.note || '')}</textarea></label>
       <div class="row gap">${m ? `<button class="btn danger-ghost" data-del>${icon('undo')} Cofnij</button>` : ''}<button class="btn primary big grow" data-save>${icon('check')} Zjedzone</button></div>`,
     onMount: (el, close) => {
+      const tricks = el.querySelector('.tricks');
+      el.querySelector('[value=sztuczki]').addEventListener('change', (ev) => { if (tricks) tricks.hidden = !ev.target.checked; });
       el.querySelector('[data-save]').onclick = async () => {
         const sel = [...el.querySelectorAll('[name=how]:checked')].map((x) => x.value);
-        await D.saveMeal({ day, n, how: sel, note: el.querySelector('#meal-note').value.trim(), by: m?.by || D.me(), at: m?.at || new Date().toISOString() });
+        const tr = sel.includes('sztuczki') ? [...el.querySelectorAll('[name=trick]:checked')].map((x) => x.value) : [];
+        await D.saveMeal({ day, n, how: sel, tricks: tr, note: el.querySelector('#meal-note').value.trim(), by: m?.by || D.me(), at: m?.at || new Date().toISOString() });
         vibrate();
         close();
         const left = p.meals - D.mealsOf(day).length;

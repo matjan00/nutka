@@ -35,7 +35,9 @@ export function render() {
     ].filter(([, l]) => l.length);
     body = list.length
       ? groups.map(([t, l]) => `<section class="card"><h2>${esc(t)}</h2><ul class="checks">${l.map((x) => taskCheck(x, day)).join('')}</ul></section>`).join('')
-      : emptyState('Brak zadań tego dnia', 'Dodajcie zadania — codzienne (spacer węchowy), co tydzień (czesanie) lub jednorazowe (wizyta u weta).');
+      : emptyState('Brak zadań tego dnia', D.activeProtocol(day)
+        ? 'Posiłki i kenel z zaleceń odhaczacie na ekranie Dziś. Tu możecie dodać inne sprawy — np. czesanie albo wizytę u weterynarza.'
+        : 'Dodajcie zadania — codzienne, co tydzień (czesanie) lub jednorazowe (wizyta u weta).');
   } else {
     body = all.length ? `<div class="list">${all.map((t) => `<button class="list-row" data-act="t-edit" data-id="${esc(t.id)}">
       <span class="grow"><strong>${esc(t.title)}</strong><small>${t.archived ? 'wstrzymane · ' : ''}${esc(repeatText(t))} · ${assigneeChip(t.who)}</small></span>${icon('edit', 'dim')}</button>`).join('')}</div>`
