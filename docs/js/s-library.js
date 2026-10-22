@@ -73,7 +73,7 @@ export function renderDetail({ id }) {
   return `${header({ title: ex.name, back: true, right: ex.custom ? `<button class="icon-btn" data-act="custom-edit" data-id="${esc(id)}" aria-label="Edytuj">${icon('edit')}</button>` : '' })}
   <div class="detail-meta">${exBadge(ex, 'lg')}<div><p class="cat-label cat-${esc(ex.cat)}">${esc(catName(ex.cat))}</p><p>${levelDots(ex.lvl)} ${esc(LEVELS[ex.lvl] || '')} · ${ex.stages.length} ${plural(ex.stages.length, 'etap', 'etapy', 'etapów')}</p></div></div>
   ${status}
-  ${D.activeProtocol() && !ex.calm ? `<p class="plan-note">${icon('info')} <span>Na czas zaleceń behawiorystki to ćwiczenie czeka — teraz tylko spokojne, niepobudzające zadania${(D.activeProtocol().noWalks && ['smycz', 'noga', 'mijanie', 'przywolanie', 'chowany'].includes(ex.id)) ? ' i bez spacerów' : ''}.</span></p>` : ''}
+  ${D.activeProtocol() && !ex.calm ? `<p class="plan-note">${icon('info')} <span>Na czas zaleceń behawiorysty to ćwiczenie czeka — teraz tylko spokojne, niepobudzające zadania${(D.activeProtocol().noWalks && ['smycz', 'noga', 'mijanie', 'przywolanie', 'chowany'].includes(ex.id)) ? ' i bez spacerów' : ''}.</span></p>` : ''}
   <div class="row gap mt">
     <button class="btn secondary grow" data-act="train-one" data-id="${esc(id)}">${icon('play')} Ćwicz teraz</button>
     ${!p.mastered ? `<button class="btn ghost" data-act="master" data-id="${esc(id)}">${icon('star')} Już umie</button>` : ''}

@@ -4,7 +4,7 @@
 // why, stages[{t, d, goal}], tips[], mistakes[], collie (uwaga dla border collie), pre (ćwiczenia wcześniej).
 
 export const CATEGORIES = [
-  { id: 'beh', name: 'Od behawiorystki', short: 'Behawiorysta', desc: 'Ćwiczenia z zaleceń — opis to ogólna podpowiedź, ważniejsze są wskazówki z Waszego spotkania.' },
+  { id: 'beh', name: 'Od behawiorysty', short: 'Behawiorysta', desc: 'Ćwiczenia z zaleceń — opis to ogólna podpowiedź, ważniejsze są wskazówki z Waszego spotkania.' },
   { id: 'base', name: 'Fundamenty', short: 'Fundamenty', desc: 'Marker, kontakt, target — na tym stoi cała reszta.' },
   { id: 'obed', name: 'Posłuszeństwo', short: 'Posłuszeństwo', desc: 'Komendy na co dzień: w domu, na spacerze, w mieście.' },
   { id: 'calm', name: 'Spokój i samokontrola', short: 'Spokój', desc: 'Wyłącznik, cierpliwość, mijanie bodźców — kluczowe u border collie.' },
@@ -46,7 +46,7 @@ export const EXERCISES = [
     stages: [
       { t: 'Kenel to dobre miejsce', d: 'Wygodne posłanie, woda, ewentualnie gryzak. Kenel w spokojnym miejscu domu, można przykryć kocem.', goal: 'Pies sam wchodzi do kenela' },
       { t: 'Zamknięte drzwiczki', d: 'Zamykaj, gdy pies leży spokojnie. Otwieraj, gdy jest cicho — nie wtedy, gdy szczeka lub drapie.', goal: 'Spokojnie przy zamkniętych drzwiczkach' },
-      { t: 'Długi odpoczynek', d: 'Kilka dłuższych drzemek w ciągu dnia, razem minimum tyle, ile zaleciła behawiorystka.', goal: 'Dzienny limit kenela osiągnięty spokojnie' },
+      { t: 'Długi odpoczynek', d: 'Kilka dłuższych drzemek w ciągu dnia, razem minimum tyle, ile zalecił behawiorysta.', goal: 'Dzienny limit kenela osiągnięty spokojnie' },
     ],
     tips: ['Wyjścia na siku krótkie i nudne, prosto na trawę i z powrotem.', 'Wypuszczajcie w chwili ciszy.'],
     mistakes: ['Otwieranie, gdy pies szczeka — uczy, że szczekanie otwiera drzwi.'],

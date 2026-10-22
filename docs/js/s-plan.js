@@ -18,7 +18,7 @@ export function planHero(p, day) {
   const over = p.days && n > p.days;
   return `<section class="hero card plan-hero">
     <div class="hero-text">
-      <p class="eyebrow">Zalecenia behawiorystki · ${over ? 'czas minął' : `dzień ${n}${p.days ? ` z ${p.days}` : ''}`}</p>
+      <p class="eyebrow">Zalecenia behawiorysty · ${over ? 'czas minął' : `dzień ${n}${p.days ? ` z ${p.days}` : ''}`}</p>
       <p class="hero-line">${esc(p.diagnosis || p.title)}</p>
       <div class="hero-chips">
         ${p.noWalks ? `<span class="chip">${icon('x')} Bez spacerów</span>` : ''}

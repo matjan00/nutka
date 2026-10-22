@@ -67,7 +67,7 @@ function planSummary() {
   const meals = days.reduce((a, d) => a + Math.min(p.meals, D.mealsOf(d).length), 0);
   const stays = D.kennelStays();
   const avg = days.length ? Math.round(days.reduce((a, d) => a + kennelMinutes(stays, d), 0) / days.length) : 0;
-  return `<a class="card plan-link" href="#/plan"><div class="grow"><p class="eyebrow">Zalecenia behawiorystki</p>
+  return `<a class="card plan-link" href="#/plan"><div class="grow"><p class="eyebrow">Zalecenia behawiorysty</p>
     <strong>Posiłki ${meals}/${days.length * p.meals} · kenel średnio ${Math.floor(avg / 60)} h ${avg % 60} min/dzień</strong></div>${icon('next')}</a>`;
 }
 
